@@ -1,4 +1,4 @@
-# ConfigCat SDK for PHP
+# ConfigCat SDK for PHP 7
 https://configcat.com
 
 ConfigCat SDK for PHP 7 provides easy integration for your application to ConfigCat.
