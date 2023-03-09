@@ -7,7 +7,7 @@ ConfigCat is a feature flag and configuration management service that lets you s
 
 ConfigCat is a <a href="https://configcat.com" target="_blank">hosted feature flag service</a>. Manage feature toggles across frontend, backend, mobile, desktop apps. <a href="https://configcat.com" target="_blank">Alternative to LaunchDarkly</a>. Management app + feature flag SDKs.
 
-[![Build Status](https://github.com/configcat/php7-sdk/actions/workflows/php-ci.yml/badge.svg?branch=master)](https://github.com/configcat/php7-sdk/actions/workflows/php-ci.yml)
+[![Build Status](https://github.com/configcat/php7-sdk/actions/workflows/php-ci.yml/badge.svg?branch=main)](https://github.com/configcat/php7-sdk/actions/workflows/php-ci.yml)
 [![Coverage Status](https://img.shields.io/codecov/c/github/ConfigCat/php7-sdk.svg)](https://codecov.io/gh/ConfigCat/php7-sdk)
 [![Latest Stable Version](https://poser.pugx.org/configcat/configcat-client-php7/version)](https://packagist.org/packages/configcat/configcat-client-php7)
 [![Total Downloads](https://poser.pugx.org/configcat/configcat-client-php7/downloads)](https://packagist.org/packages/configcat/configcat-client-php7)
@@ -26,7 +26,7 @@ composer require configcat/configcat-client-php7
 ```
 
 ### 2. Go to the <a href="https://app.configcat.com/sdkkey" target="_blank">ConfigCat Dashboard</a> to get your *SDK Key*:
-![SDK-KEY](https://raw.githubusercontent.com/ConfigCat/php7-sdk/master/media/readme02-3.png  "SDK-KEY")
+![SDK-KEY](https://raw.githubusercontent.com/ConfigCat/php7-sdk/main/media/readme02-3.png  "SDK-KEY")
 
 ### 3. Create the *ConfigCat* client instance
 ```php
@@ -64,7 +64,7 @@ if(is_bool($isMyAwesomeFeatureEnabled) && $isMyAwesomeFeatureEnabled) {
 ```
 
 ## Sample/Demo app
-* [Sample Laravel app](https://github.com/ConfigCat/php7-sdk/tree/master/samples/laravel)
+* [Sample Laravel app](https://github.com/ConfigCat/php7-sdk/tree/main/samples/laravel)
 
 ## Need help?
 https://configcat.com/support
