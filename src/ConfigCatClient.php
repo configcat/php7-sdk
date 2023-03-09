@@ -229,6 +229,9 @@ final class ConfigCatClient implements ClientInterface
      * @param mixed $defaultVariationId In case of any failure, this value will be returned.
      * @param User|null $user The user object to identify the caller.
      * @return mixed The Variation ID identified by the given key.
+     *
+     * @deprecated This method is obsolete and will be removed in a future major version.
+     * Please use getValueDetails() instead.
      */
     public function getVariationId(string $key, $defaultVariationId, User $user = null)
     {
@@ -266,6 +269,9 @@ final class ConfigCatClient implements ClientInterface
      *
      * @param User|null $user The user object to identify the caller.
      * @return array of all Variation IDs.
+     *
+     * @deprecated This method is obsolete and will be removed in a future major version.
+     * Please use getAllValueDetails() instead.
      */
     public function getAllVariationIds(User $user = null): array
     {
@@ -329,6 +335,37 @@ final class ConfigCatClient implements ClientInterface
             return is_null($settingsResult->settings) ? [] : $this->parseValues($settingsResult, $user);
         } catch (Exception $exception) {
             $this->logger->error("An error occurred during getting all values. Returning empty array. "
+                . $exception->getMessage(), ['exception' => $exception]);
+            return [];
+        }
+    }
+
+    /**
+     * Gets the values along with evaluation details of all feature flags and settings.
+     *
+     * @param User|null $user The user object to identify the caller.
+     * @return EvaluationDetails[] of evaluation details of all feature flags and settings.
+     */
+    public function getAllValueDetails(?User $user = null): array
+    {
+        try {
+            $settingsResult = $this->getSettings();
+            if (empty($settingsResult->settings)) {
+                return [];
+            }
+            $keys = array_keys($settingsResult->settings);
+            $result = [];
+            foreach ($keys as $key) {
+                $result[$key] = $this->evaluate(
+                    $key,
+                    $settingsResult->settings[$key],
+                    $user,
+                    $settingsResult->fetchTime
+                );
+            }
+            return $result;
+        } catch (Exception $exception) {
+            $this->logger->error("An error occurred during getting all value details. Returning empty array. "
                 . $exception->getMessage(), ['exception' => $exception]);
             return [];
         }

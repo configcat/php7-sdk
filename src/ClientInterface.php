@@ -35,6 +35,9 @@ interface ClientInterface
      * @param mixed $defaultVariationId In case of any failure, this value will be returned.
      * @param User|null $user The user object to identify the caller.
      * @return mixed The Variation ID identified by the given key.
+     *
+     * @deprecated This method is obsolete and will be removed in a future major version.
+     * Please use getValueDetails() instead.
      */
     public function getVariationId(string $key, $defaultVariationId, User $user = null);
 
@@ -43,6 +46,9 @@ interface ClientInterface
      *
      * @param User|null $user The user object to identify the caller.
      * @return array of all Variation IDs.
+     *
+     * @deprecated This method is obsolete and will be removed in a future major version.
+     * Please use getAllValueDetails() instead.
      */
     public function getAllVariationIds(User $user = null): array;
 
@@ -68,6 +74,14 @@ interface ClientInterface
      * @return array of values.
      */
     public function getAllValues(User $user = null): array;
+
+    /**
+     * Gets the values along with evaluation details of all feature flags and settings.
+     *
+     * @param User|null $user The user object to identify the caller.
+     * @return EvaluationDetails[] of evaluation details of all feature flags and settings.
+     */
+    public function getAllValueDetails(?User $user = null): array;
 
     /**
      * Initiates a force refresh on the cached configuration.
