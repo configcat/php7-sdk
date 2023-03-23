@@ -161,7 +161,7 @@ final class ConfigCatClient implements ClientInterface
             if (!array_key_exists($key, $settingsResult->settings)) {
                 $message = "Failed to evaluate setting '{KEY}' (the key was not found in config JSON). " .
                     "Returning the `{DEFAULT_PARAM_NAME}` parameter that you specified in your application: '{DEFAULT_PARAM_VALUE}'. " .
-                    "Available keys: {AVAILABLE_KEYS}.";
+                    "Available keys: [{AVAILABLE_KEYS}].";
                 $messageCtx = [
                     'event_id' => 1001,
                     'KEY' => $key,
@@ -221,7 +221,7 @@ final class ConfigCatClient implements ClientInterface
             if (!array_key_exists($key, $settingsResult->settings)) {
                 $message = "Failed to evaluate setting '{KEY}' (the key was not found in config JSON). " .
                     "Returning the `{DEFAULT_PARAM_NAME}` parameter that you specified in your application: '{DEFAULT_PARAM_VALUE}'. " .
-                    "Available keys: {AVAILABLE_KEYS}.";
+                    "Available keys: [{AVAILABLE_KEYS}].";
                 $messageCtx = [
                     'event_id' => 1001,
                     'KEY' => $key,
@@ -272,7 +272,7 @@ final class ConfigCatClient implements ClientInterface
             if (!array_key_exists($key, $settingsResult->settings)) {
                 $this->logger->error("Failed to evaluate setting '{KEY}' (the key was not found in config JSON). " .
                     "Returning the `{DEFAULT_PARAM_NAME}` parameter that you specified in your application: '{DEFAULT_PARAM_VALUE}'. " .
-                    "Available keys: {AVAILABLE_KEYS}.", [
+                    "Available keys: [{AVAILABLE_KEYS}].", [
                         'event_id' => 1001,
                         'KEY' => $key,
                         'DEFAULT_PARAM_NAME' => '$defaultVariationId', 'DEFAULT_PARAM_VALUE' => $defaultVariationId,
