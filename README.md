@@ -16,7 +16,7 @@ ConfigCat is a <a href="https://configcat.com" target="_blank">hosted feature fl
 ## Requirements
 - PHP >= 7.1
 
-ConfigCat SDK for PHP >= 8 is available [here](https://github.com/configcat/php-sdk).
+ConfigCat SDK for PHP >= 8.1 is available [here](https://github.com/configcat/php-sdk).
 
 ## Getting started
 
