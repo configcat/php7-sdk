@@ -96,7 +96,7 @@ final class ConfigFetcher
         $this->logger = $logger;
         $this->requestOptions = array_merge([
             'headers' => [
-                'X-ConfigCat-UserAgent' => "ConfigCat-PHP/" . ConfigCatClient::SDK_VERSION
+                'X-ConfigCat-UserAgent' => "ConfigCat-7PHP/" . ConfigCatClient::SDK_VERSION
             ],
         ], $additionalOptions);
 
