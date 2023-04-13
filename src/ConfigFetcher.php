@@ -149,10 +149,14 @@ final class ConfigFetcher
         }
 
         if ($redirect == self::SHOULD_REDIRECT) {
-            $this->logger->warning("The `dataGovernance` parameter specified at the client initialization is not in sync with the preferences on the ConfigCat Dashboard. " .
-                "Read more: https://configcat.com/docs/advanced/data-governance/", [
+            $this->logger->warning(
+                "The `dataGovernance` parameter specified at the client initialization is ".
+                "not in sync with the preferences on the ConfigCat Dashboard. " .
+                "Read more: https://configcat.com/docs/advanced/data-governance/",
+                [
                     'event_id' => 3002
-                ]);
+                ]
+            );
         }
 
         if ($executionCount > 0) {

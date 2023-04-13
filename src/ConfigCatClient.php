@@ -156,7 +156,12 @@ final class ConfigCatClient implements ClientInterface
                     'DEFAULT_PARAM_NAME' => '$defaultValue', 'DEFAULT_PARAM_VALUE' => Utils::getStringRepresentation($defaultValue)
                 ];
                 $this->logger->error($message, $messageCtx);
-                $this->hooks->fireOnFlagEvaluated(EvaluationDetails::fromError($key, $defaultValue, $user, InternalLogger::format($message, $messageCtx)));
+                $this->hooks->fireOnFlagEvaluated(EvaluationDetails::fromError(
+                    $key,
+                    $defaultValue,
+                    $user,
+                    InternalLogger::format($message, $messageCtx)
+                ));
                 return $defaultValue;
             }
 
@@ -168,10 +173,15 @@ final class ConfigCatClient implements ClientInterface
                     'event_id' => 1001,
                     'KEY' => $key,
                     'DEFAULT_PARAM_NAME' => '$defaultValue', 'DEFAULT_PARAM_VALUE' => Utils::getStringRepresentation($defaultValue),
-                    'AVAILABLE_KEYS' => implode(", ", array_keys($settingsResult->settings))
+                    'AVAILABLE_KEYS' => "'".implode("', '", array_keys($settingsResult->settings))."'"
                 ];
                 $this->logger->error($message, $messageCtx);
-                $this->hooks->fireOnFlagEvaluated(EvaluationDetails::fromError($key, $defaultValue, $user, InternalLogger::format($message, $messageCtx)));
+                $this->hooks->fireOnFlagEvaluated(EvaluationDetails::fromError(
+                    $key,
+                    $defaultValue,
+                    $user,
+                    InternalLogger::format($message, $messageCtx)
+                ));
                 return $defaultValue;
             }
 
@@ -190,8 +200,12 @@ final class ConfigCatClient implements ClientInterface
                 'DEFAULT_PARAM_NAME' => '$defaultValue', 'DEFAULT_PARAM_VALUE' => Utils::getStringRepresentation($defaultValue)
             ];
             $this->logger->error($message, $messageCtx);
-            $this->hooks->fireOnFlagEvaluated(EvaluationDetails::fromError($key, $defaultValue, $user,
-                InternalLogger::format($message, $messageCtx)));
+            $this->hooks->fireOnFlagEvaluated(EvaluationDetails::fromError(
+                $key,
+                $defaultValue,
+                $user,
+                InternalLogger::format($message, $messageCtx)
+            ));
             return $defaultValue;
         }
     }
@@ -230,7 +244,7 @@ final class ConfigCatClient implements ClientInterface
                     'event_id' => 1001,
                     'KEY' => $key,
                     'DEFAULT_PARAM_NAME' => '$defaultValue', 'DEFAULT_PARAM_VALUE' => Utils::getStringRepresentation($defaultValue),
-                    'AVAILABLE_KEYS' => implode(", ", array_keys($settingsResult->settings))
+                    'AVAILABLE_KEYS' => "'".implode("', '", array_keys($settingsResult->settings))."'"
                 ];
                 $this->logger->error($message, $messageCtx);
                 $details = EvaluationDetails::fromError($key, $defaultValue, $user, InternalLogger::format($message, $messageCtx));
@@ -662,7 +676,10 @@ final class ConfigCatClient implements ClientInterface
         // we just add the event ID.
         $formatter = new LineFormatter(
             "[%datetime%] %channel%.%level_name%: [%context.event_id%] %message% %context% %extra%\n",
-            null, true, true);
+            null,
+            true,
+            true
+        );
         $handler->setFormatter($formatter);
         // We use placeholders for message arguments as defined by the PSR-3 standard
         // (see https://www.php-fig.org/psr/psr-3/#12-message). Since `true` is passed
