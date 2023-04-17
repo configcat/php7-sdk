@@ -494,7 +494,7 @@ final class ConfigCatClient implements ClientInterface
         return true;
     }
 
-    private function checkSettingAvailable(SettingsResult $settingsResult, string $key, string $defaultValueParam, mixed $defaultValue): ?string
+    private function checkSettingAvailable(SettingsResult $settingsResult, string $key, string $defaultValueParam, $defaultValue): ?string
     {
         if ($settingsResult->settings === null) {
             $message = "Config JSON is not present when evaluating setting '{KEY}'. " .
