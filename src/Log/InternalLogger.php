@@ -3,6 +3,10 @@
 namespace ConfigCat\Log;
 
 use ConfigCat\Hooks;
+use Monolog\DateTimeImmutable;
+use Monolog\Level;
+use Monolog\LogRecord;
+use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -40,32 +44,36 @@ class InternalLogger implements LoggerInterface
 
     public function emergency($message, array $context = []): void
     {
-        $this->hooks->fireOnError($message);
+        $this->hooks->fireOnError(self::format($message, $context));
         if ($this->shouldLog(LogLevel::EMERGENCY, $context)) {
+            $this->ensureEventId($context);
             $this->logger->emergency($message, $context);
         }
     }
 
     public function alert($message, array $context = []): void
     {
-        $this->hooks->fireOnError($message);
+        $this->hooks->fireOnError(self::format($message, $context));
         if ($this->shouldLog(LogLevel::ALERT, $context)) {
+            $this->ensureEventId($context);
             $this->logger->alert($message, $context);
         }
     }
 
     public function critical($message, array $context = []): void
     {
-        $this->hooks->fireOnError($message);
+        $this->hooks->fireOnError(self::format($message, $context));
         if ($this->shouldLog(LogLevel::CRITICAL, $context)) {
+            $this->ensureEventId($context);
             $this->logger->critical($message, $context);
         }
     }
 
     public function error($message, array $context = []): void
     {
-        $this->hooks->fireOnError($message);
+        $this->hooks->fireOnError(self::format($message, $context));
         if ($this->shouldLog(LogLevel::ERROR, $context)) {
+            $this->ensureEventId($context);
             $this->logger->error($message, $context);
         }
     }
@@ -73,6 +81,7 @@ class InternalLogger implements LoggerInterface
     public function warning($message, array $context = []): void
     {
         if ($this->shouldLog(LogLevel::WARNING, $context)) {
+            $this->ensureEventId($context);
             $this->logger->warning($message, $context);
         }
     }
@@ -80,6 +89,7 @@ class InternalLogger implements LoggerInterface
     public function notice($message, array $context = []): void
     {
         if ($this->shouldLog(LogLevel::NOTICE, $context)) {
+            $this->ensureEventId($context);
             $this->logger->notice($message, $context);
         }
     }
@@ -87,6 +97,7 @@ class InternalLogger implements LoggerInterface
     public function info($message, array $context = []): void
     {
         if ($this->shouldLog(LogLevel::INFO, $context)) {
+            $this->ensureEventId($context);
             $this->logger->info($message, $context);
         }
     }
@@ -94,6 +105,7 @@ class InternalLogger implements LoggerInterface
     public function debug($message, array $context = []): void
     {
         if ($this->shouldLog(LogLevel::DEBUG, $context)) {
+            $this->ensureEventId($context);
             $this->logger->debug($message, $context);
         }
     }
@@ -107,7 +119,7 @@ class InternalLogger implements LoggerInterface
     {
         if ($currentLevel >= $this->globalLevel && !$this->hasAnythingToIgnore($context)) {
             return true;
-        }
+    }
 
         return false;
     }
@@ -125,5 +137,37 @@ class InternalLogger implements LoggerInterface
         }
 
         return false;
+    }
+
+    private function ensureEventId(array &$context): void
+    {
+        if (!array_key_exists('event_id', $context)) {
+            $context['event_id'] = 0;
+        }
+    }
+
+    public static function format(string $message, array $context): string
+    {
+        // Format PSR-3 log message by reusing PsrLogMessageProcessor's logic
+        // (see https://www.php-fig.org/psr/psr-3/#12-message).
+        static $psrProcessor = null;
+        if (is_null($psrProcessor)) {
+            $psrProcessor = new PsrLogMessageProcessor();
+        }
+
+        // Before v3.0, Monolog didn't have the LogRecord class but used a simple array.
+        if (class_exists('\Monolog\LogRecord')) {
+            $rec = new LogRecord(new DateTimeImmutable('@0'), "", Level::Notice, $message, $context);
+            $message = $psrProcessor->__invoke($rec)->message;
+        } else {
+            $rec = ['message' => $message, 'context' => $context];
+            $message = $psrProcessor->__invoke($rec)['message'];
+        }
+
+        if (array_key_exists('exception', $context)) {
+            $message = $message . PHP_EOL . $context['exception']->getMessage();
+        }
+
+        return $message;
     }
 }

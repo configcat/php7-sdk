@@ -12,7 +12,7 @@ class SettingsResult
     /** @var int */
     public $fetchTime;
 
-    public function __construct(array $settings, int $fetchTime)
+    public function __construct(?array $settings, int $fetchTime)
     {
         $this->settings = $settings;
         $this->fetchTime = $fetchTime;
