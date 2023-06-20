@@ -28,7 +28,7 @@ use Psr\Log\LoggerInterface;
 final class ConfigCatClient implements ClientInterface
 {
     /** @var string */
-    const SDK_VERSION = "1.1.0";
+    const SDK_VERSION = "1.1.1";
 
     /** @var InternalLogger */
     private $logger;
@@ -153,7 +153,8 @@ final class ConfigCatClient implements ClientInterface
                     $key,
                     $defaultValue,
                     $user,
-                    $errorMessage));
+                    $errorMessage
+                ));
                 return $defaultValue;
             }
 
@@ -188,7 +189,7 @@ final class ConfigCatClient implements ClientInterface
      * @param string $key The identifier of the configuration value.
      * @param mixed $defaultValue In case of any failure, this value will be returned.
      * @param User|null $user The user object to identify the caller.
-     * @return mixed The configuration value identified by the given key.
+     * @return EvaluationDetails The configuration value identified by the given key.
      */
     public function getValueDetails(string $key, $defaultValue, User $user = null): EvaluationDetails
     {
@@ -196,12 +197,14 @@ final class ConfigCatClient implements ClientInterface
             $settingsResult = $this->getSettingsResult();
             $errorMessage = $this->checkSettingAvailable($settingsResult, $key, '$defaultValue', $defaultValue);
             if ($errorMessage !== null) {
-                $this->hooks->fireOnFlagEvaluated(EvaluationDetails::fromError(
+                $details = EvaluationDetails::fromError(
                     $key,
                     $defaultValue,
                     $user,
-                    $errorMessage));
-                return $defaultValue;
+                    $errorMessage
+                );
+                $this->hooks->fireOnFlagEvaluated($details);
+                return $details;
             }
 
             return $this->evaluate($key, $settingsResult->settings[$key], $user, $settingsResult->fetchTime);
