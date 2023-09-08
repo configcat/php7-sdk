@@ -1,0 +1,1 @@
+Please check the [Github Releases](https://github.com/configcat/php7-sdk/releases) page for the changelog of the PHP 7 SDK for ConfigCat.
