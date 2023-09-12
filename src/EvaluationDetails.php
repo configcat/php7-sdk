@@ -16,8 +16,8 @@ class EvaluationDetails
     private $isDefaultValue;
     /** @var string */
     private $error;
-    /** @var int */
-    private $fetchTimeUnixSeconds;
+    /** @var float */
+    private $fetchTimeUnixMilliseconds;
     /** @var array|null */
     private $matchedEvaluationRule;
     /** @var array|null */
@@ -33,7 +33,7 @@ class EvaluationDetails
         ?User $user,
         bool $isDefaultValue,
         ?string $error,
-        int $fetchTimeUnixSeconds,
+        float $fetchTimeUnixMilliseconds,
         ?array $matchedEvaluationRule,
         ?array $matchedEvaluationPercentageRule
     ) {
@@ -43,7 +43,7 @@ class EvaluationDetails
         $this->user = $user;
         $this->isDefaultValue = $isDefaultValue;
         $this->error = $error;
-        $this->fetchTimeUnixSeconds = $fetchTimeUnixSeconds;
+        $this->fetchTimeUnixMilliseconds = $fetchTimeUnixMilliseconds;
         $this->matchedEvaluationRule = $matchedEvaluationRule;
         $this->matchedEvaluationPercentageRule = $matchedEvaluationPercentageRule;
     }
@@ -115,11 +115,11 @@ class EvaluationDetails
     }
 
     /**
-     * @return int the last download time of the current config in unix seconds format.
+     * @return float the last download time of the current config in unix milliseconds format.
      */
-    public function getFetchTimeUnixSeconds(): int
+    public function getFetchTimeUnixMilliseconds(): float
     {
-        return $this->fetchTimeUnixSeconds;
+        return $this->fetchTimeUnixMilliseconds;
     }
 
     /**

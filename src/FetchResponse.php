@@ -2,6 +2,8 @@
 
 namespace ConfigCat;
 
+use ConfigCat\Cache\ConfigEntry;
+
 /**
  * Represents a fetch response, including its state and body.
  * @package ConfigCat
@@ -16,28 +18,20 @@ final class FetchResponse
     /** @var int */
     const FAILED = 3;
 
-    /** @var array|null */
-    private $body;
     /** @var int */
     private $status;
-    /** @var string|null */
-    private $etag;
-    /** @var string */
-    private $url;
+    /** @var ConfigEntry */
+    private $cacheEntry;
     /** @var string|null */
     private $error;
 
     private function __construct(
         int $status,
-        ?string $etag = null,
-        ?array $body = null,
-        ?string $url = null,
+        ConfigEntry $cacheEntry,
         ?string $error = null
     ) {
         $this->status = $status;
-        $this->body = $body;
-        $this->etag = $etag;
-        $this->url = $url;
+        $this->cacheEntry = $cacheEntry;
         $this->error = $error;
     }
 
@@ -49,7 +43,7 @@ final class FetchResponse
      */
     public static function failure(string $error): FetchResponse
     {
-        return new FetchResponse(self::FAILED, null, null, null, $error);
+        return new FetchResponse(self::FAILED, ConfigEntry::empty(), $error);
     }
 
     /**
@@ -59,20 +53,18 @@ final class FetchResponse
      */
     public static function notModified(): FetchResponse
     {
-        return new FetchResponse(self::NOT_MODIFIED, null, null, null, null);
+        return new FetchResponse(self::NOT_MODIFIED, ConfigEntry::empty(), null);
     }
 
     /**
      * Creates a new response with FETCHED status.
      *
-     * @param string|null $etag the ETag.
-     * @param array $body the response body.
-     * @param string $url the fetched url.
+     * @param ConfigEntry $entry the produced config entry.
      * @return FetchResponse the response.
      */
-    public static function success(?string $etag, array $body, string $url): FetchResponse
+    public static function success(ConfigEntry $entry): FetchResponse
     {
-        return new FetchResponse(self::FETCHED, $etag, $body, $url, null);
+        return new FetchResponse(self::FETCHED, $entry, null);
     }
 
     /**
@@ -106,33 +98,13 @@ final class FetchResponse
     }
 
     /**
-     * Returns the response body.
+     * Returns the produced config entry.
      *
-     * @return array|null The fetched response body.
+     * @return ConfigEntry The produced config entry.
      */
-    public function getBody(): ?array
+    public function getConfigEntry(): ConfigEntry
     {
-        return $this->body;
-    }
-
-    /**
-     * Returns the ETag.
-     *
-     * @return string|null The received ETag.
-     */
-    public function getETag(): ?string
-    {
-        return $this->etag;
-    }
-
-    /**
-     * Returns the proper cdn url.
-     *
-     * @return string|null The cdn url.
-     */
-    public function getUrl(): ?string
-    {
-        return $this->url;
+        return $this->cacheEntry;
     }
 
     /**
