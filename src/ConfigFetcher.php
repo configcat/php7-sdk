@@ -185,12 +185,13 @@ final class ConfigFetcher
             ];
             $this->logger->error($message, $messageCtx);
             return FetchResponse::failure(InternalLogger::format($message, $messageCtx));
-        } catch (ClientExceptionInterface $exception) {
+        } catch (ClientExceptionInterface|\Exception $exception) {
             $message = 'Unexpected error occurred while trying to fetch config JSON.';
             $messageCtx = ['event_id' => 1103, 'exception' => $exception];
             $this->logger->error($message, $messageCtx);
 
             return FetchResponse::failure($message);
         }
+
     }
 }
