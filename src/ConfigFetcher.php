@@ -192,6 +192,5 @@ final class ConfigFetcher
 
             return FetchResponse::failure($message);
         }
-
     }
 }
