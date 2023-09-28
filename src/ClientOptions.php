@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ConfigCat;
 
 /**
@@ -40,13 +42,24 @@ final class ClientOptions
     /**
      * Additional options for Guzzle http requests.
      * https://docs.guzzlephp.org/en/stable/request-options.html
+     *
+     * @deprecated use \ConfigCat\ClientOptions::FETCH_CLIENT option instead with \ConfigCat\Http\GuzzleFetchClient::create()
      */
     const REQUEST_OPTIONS = "request-options";
 
     /**
      * A custom callable Guzzle http handler.
+     *
+     * @deprecated use \ConfigCat\ClientOptions::FETCH_CLIENT option instead with \ConfigCat\Http\GuzzleFetchClient::create()
      */
     const CUSTOM_HANDLER = "custom-handler";
+
+    /**
+     * A \ConfigCat\Http\FetchClientInterface implementation that wraps an actual HTTP client used
+     * to make HTTP requests towards ConfigCat.
+     * When it's not set, \ConfigCat\Http\GuzzleFetchClient is used by default.
+     */
+    public const FETCH_CLIENT = 'fetch-client';
 
     /**
      * Default: Global. Set this parameter to be in sync with the Data Governance

@@ -21,22 +21,24 @@ class ConfigFetcherTest extends TestCase
 
     public function testFetchOk()
     {
-        $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
-            new Response(200, [ConfigFetcher::ETAG_HEADER => $this->mockEtag], $this->mockBody)
-        ]))]);
+        $mockHandler = new MockHandler([
+            new Response(200, [ConfigFetcher::ETAG_HEADER => $this->mockEtag], $this->mockBody)]);
+        $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [
+            ClientOptions::CUSTOM_HANDLER => HandlerStack::create($mockHandler)]);
 
         $response = $fetcher->fetch("old_etag");
 
         $this->assertTrue($response->isFetched());
         $this->assertEquals($this->mockEtag, $response->getConfigEntry()->getEtag());
         $this->assertEquals("value", $response->getConfigEntry()->getConfig()['key']);
+        $this->assertNotEmpty($mockHandler->getLastRequest()->getHeader('X-ConfigCat-UserAgent'));
     }
 
     public function testFetchNotModified()
     {
-        $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
-            new Response(304, [ConfigFetcher::ETAG_HEADER => $this->mockEtag])
-        ]))]);
+        $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [
+            ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
+            new Response(304, [ConfigFetcher::ETAG_HEADER => $this->mockEtag])]))]);
 
         $response = $fetcher->fetch("");
 
@@ -47,9 +49,9 @@ class ConfigFetcherTest extends TestCase
 
     public function testFetchFailed()
     {
-        $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
-            new Response(400)
-        ]))]);
+        $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [
+            ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
+            new Response(400)]))]);
 
         $response = $fetcher->fetch("");
 
@@ -60,9 +62,9 @@ class ConfigFetcherTest extends TestCase
 
     public function testFetchInvalidJson()
     {
-        $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
-            new Response(200, [], "{\"key\": value}")
-        ]))]);
+        $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [
+            ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
+            new Response(200, [], "{\"key\": value}")]))]);
 
         $response = $fetcher->fetch("");
 
@@ -75,34 +77,6 @@ class ConfigFetcherTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         new ConfigFetcher("", Utils::getNullLogger());
-    }
-
-    public function testConstructDefaults()
-    {
-        $fetcher = new ConfigFetcher("api", Utils::getTestLogger());
-        $options = $fetcher->getRequestOptions();
-
-        $this->assertEquals(10, $options[RequestOptions::CONNECT_TIMEOUT]);
-        $this->assertEquals(30, $options[RequestOptions::TIMEOUT]);
-        $this->assertArrayHasKey("headers", $options);
-    }
-
-    public function testConstructConnectTimeoutOption()
-    {
-        $fetcher = new ConfigFetcher("api", Utils::getTestLogger(), [ClientOptions::REQUEST_OPTIONS => [
-            RequestOptions::CONNECT_TIMEOUT => 5
-        ]]);
-        $options = $fetcher->getRequestOptions();
-        $this->assertEquals(5, $options[RequestOptions::CONNECT_TIMEOUT]);
-    }
-
-    public function testConstructRequestTimeoutOption()
-    {
-        $fetcher = new ConfigFetcher("api", Utils::getTestLogger(), [ClientOptions::REQUEST_OPTIONS => [
-            RequestOptions::TIMEOUT => 5
-        ]]);
-        $options = $fetcher->getRequestOptions();
-        $this->assertEquals(5, $options[RequestOptions::TIMEOUT]);
     }
 
     public function testTimeoutException()

@@ -3,6 +3,7 @@
 namespace ConfigCat\Tests;
 
 use ConfigCat\Hooks;
+use ConfigCat\Log\DefaultLogger;
 use ConfigCat\Log\InternalLogger;
 use ConfigCat\Log\LogLevel;
 use Monolog\Formatter\LineFormatter;
@@ -15,16 +16,11 @@ class Utils
 {
     public static function getTestLogger(): InternalLogger
     {
-        $handler = new ErrorLogHandler();
-        $formatter = new LineFormatter(
-            "[%datetime%] %channel%.%level_name%: [%context.event_id%] %message% %context% %extra%\n",
-            null, true, true);
-        $handler->setFormatter($formatter);
-        $psrProcessor = new PsrLogMessageProcessor(null, true);
-        return new InternalLogger(new Logger("ConfigCat", [$handler], [$psrProcessor]), LogLevel::WARNING, [], new Hooks());
+        return new InternalLogger(new DefaultLogger(), LogLevel::WARNING, [], new Hooks());
     }
 
-    public static function getNullLogger(): InternalLogger {
+    public static function getNullLogger(): InternalLogger
+    {
         return new InternalLogger(new NullLogger(), LogLevel::DEBUG, [], new Hooks());
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ConfigCat\Override;
 
 /**
@@ -33,10 +35,6 @@ class OverrideBehaviour
      */
     public static function isValid(int $behaviour): bool
     {
-        if (!is_int($behaviour)) {
-            return false;
-        }
-
         return $behaviour == self::LOCAL_ONLY ||
             $behaviour == self::LOCAL_OVER_REMOTE ||
             $behaviour == self::REMOTE_OVER_LOCAL;

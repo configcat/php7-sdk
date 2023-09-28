@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ConfigCat\Override;
 
 use Psr\Log\LoggerAwareInterface;

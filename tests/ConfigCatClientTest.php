@@ -8,6 +8,7 @@ use ConfigCat\Cache\ConfigEntry;
 use ConfigCat\ClientOptions;
 use ConfigCat\ConfigCatClient;
 use ConfigCat\EvaluationDetails;
+use ConfigCat\Http\GuzzleFetchClient;
 use ConfigCat\Log\InternalLogger;
 use ConfigCat\Log\LogLevel;
 use ConfigCat\User;
@@ -67,26 +68,36 @@ class ConfigCatClientTest extends TestCase
 
         $this->assertSame($logger, $externalLogger);
         $this->assertSame(LogLevel::ERROR, $globalLevel);
-        $this->assertArraySubset([InvalidArgumentException::class], $exceptions);
+        $this->assertTrue(in_array(InvalidArgumentException::class, $exceptions));
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function testConstructCacheOption()
     {
         $cache = new ArrayCache();
         $client = new ConfigCatClient("testConstructCacheOption", [ClientOptions::CACHE => $cache]);
-        $this->assertAttributeSame($cache, "cache", $client);
+        $propCache = $this->getReflectedValue($client, 'cache');
+        $this->assertSame($cache, $propCache);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function testConstructCacheRefreshIntervalOption()
     {
         $client = new ConfigCatClient("testConstructCacheRefreshIntervalOption", [ClientOptions::CACHE_REFRESH_INTERVAL => 20]);
-        $this->assertAttributeSame(20, "cacheRefreshInterval", $client);
+        $propInterval = $this->getReflectedValue($client, 'cacheRefreshInterval');
+        $this->assertSame(20, $propInterval);
     }
 
     public function testGetValueFailedFetch()
     {
-        $client = new ConfigCatClient("testGetValueFailedFetch", [ClientOptions::CUSTOM_HANDLER => new MockHandler([
-            new Response(400)
+        $client = new ConfigCatClient("testGetValueFailedFetch", [ClientOptions::FETCH_CLIENT => GuzzleFetchClient::create([
+            'handler' => new MockHandler(
+                [new Response(400)]
+            ),
         ])]);
 
         $value = $client->getValue("key", false);
@@ -95,8 +106,10 @@ class ConfigCatClientTest extends TestCase
 
     public function testGetAllKeysFailedFetch()
     {
-        $client = new ConfigCatClient("testGetAllKeysFailedFetch", [ClientOptions::CUSTOM_HANDLER => new MockHandler([
-            new Response(400)
+        $client = new ConfigCatClient("testGetAllKeysFailedFetch", [ClientOptions::FETCH_CLIENT => GuzzleFetchClient::create([
+            'handler' => new MockHandler(
+                [new Response(400)]
+            ),
         ])]);
 
         $keys = $client->getAllKeys();
@@ -132,7 +145,9 @@ class ConfigCatClientTest extends TestCase
         );
         $client = new ConfigCatClient("testCacheExpiration", [
             ClientOptions::CACHE => $cache,
-            ClientOptions::CUSTOM_HANDLER => $mockHandler,
+            ClientOptions::FETCH_CLIENT => GuzzleFetchClient::create([
+                'handler' => $mockHandler,
+            ]),
             ClientOptions::CACHE_REFRESH_INTERVAL => 1
         ]);
 
@@ -156,9 +171,9 @@ class ConfigCatClientTest extends TestCase
     public function testGetVariationId()
     {
         $client = new ConfigCatClient("testGetVariationId", [
-            ClientOptions::CUSTOM_HANDLER => new MockHandler(
-                [new Response(200, [], self::TEST_JSON)]
-            ),
+            ClientOptions::FETCH_CLIENT => GuzzleFetchClient::create([
+                'handler' => new MockHandler([new Response(200, [], self::TEST_JSON)]),
+            ]),
         ]);
         $details = $client->getValueDetails("second", false);
 
@@ -190,9 +205,9 @@ class ConfigCatClientTest extends TestCase
     public function testGetKeyAndValue()
     {
         $client = new ConfigCatClient("testGetKeyAndValue", [
-            ClientOptions::CUSTOM_HANDLER => new MockHandler(
-                [new Response(200, [], self::TEST_JSON)]
-            ),
+            ClientOptions::FETCH_CLIENT => GuzzleFetchClient::create([
+                'handler' => new MockHandler([new Response(200, [], self::TEST_JSON)]),
+            ]),
         ]);
         $value = $client->getKeyAndValue("fakeIdSecond");
 
@@ -215,9 +230,9 @@ class ConfigCatClientTest extends TestCase
     public function testGetAllValues()
     {
         $client = new ConfigCatClient("testGetAllValues", [
-            ClientOptions::CUSTOM_HANDLER => new MockHandler(
-                [new Response(200, [], self::TEST_JSON)]
-            ),
+            ClientOptions::FETCH_CLIENT => GuzzleFetchClient::create([
+                'handler' => new MockHandler([new Response(200, [], self::TEST_JSON)]),
+            ]),
         ]);
         $value = $client->getAllValues();
 

@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ConfigCat\Override;
 
 use ConfigCat\Attributes\SettingAttributes;
-use InvalidArgumentException;
 
 /**
  * Describes an array override data source.
@@ -20,10 +21,6 @@ class ArrayDataSource extends OverrideDataSource
      */
     public function __construct(array $overrides)
     {
-        if (!is_array($overrides)) {
-            throw new InvalidArgumentException("The overrides is not a valid array.");
-        }
-
         $this->overrides = $overrides;
     }
 

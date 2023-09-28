@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ConfigCat\Log;
 
 /**
@@ -33,5 +35,31 @@ class LogLevel
             $level == self::ALERT ||
             $level == self::EMERGENCY ||
             $level == self::NO_LOG;
+    }
+
+    public static function asString(int $level): string
+    {
+        switch ($level) {
+            case self::DEBUG:
+                return 'DEBUG';
+            case self::INFO:
+                return 'INFO';
+            case self::NOTICE:
+                return 'NOTICE';
+            case self::WARNING:
+                return 'WARNING';
+            case self::ERROR:
+                return 'ERROR';
+            case self::CRITICAL:
+                return 'CRITICAL';
+            case self::ALERT:
+                return 'ALERT';
+            case self::EMERGENCY:
+                return 'EMERGENCY';
+            case self::NO_LOG:
+                return 'NO_LOG';
+            default:
+                return '';
+        }
     }
 }

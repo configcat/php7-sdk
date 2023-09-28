@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ConfigCat\Override;
 
 use ConfigCat\Attributes\Config;
@@ -36,11 +38,10 @@ class LocalFileDataSource extends OverrideDataSource
     {
         $content = file_get_contents($this->filePath);
         if ($content === false) {
-            $this->logger->error("Cannot find the local config file '{FILE_PATH}'. ' .
+            $this->logger->error("Cannot find the local config file '".$this->filePath."'. ' .
             'This is a path that your application provided to the ConfigCat SDK by passing it to the `FlagOverrides.LocalFile()` method. ' .
             'Read more: https://configcat.com/docs/sdk-reference/php/#json-file", [
                 'event_id' => 1300,
-                'FILE_PATH' => $this->filePath
             ]);
             return null;
         }
@@ -48,9 +49,8 @@ class LocalFileDataSource extends OverrideDataSource
         $json = json_decode($content, true);
 
         if ($json == null) {
-            $this->logger->error("Failed to decode JSON from the local config file '{FILE_PATH}'. JSON error: {JSON_ERROR}", [
+            $this->logger->error("Failed to decode JSON from the local config file '".$this->filePath."'. JSON error: " . json_last_error_msg(), [
                 'event_id' => 2302,
-                'FILE_PATH' => $this->filePath, 'JSON_ERROR' => json_last_error_msg()
             ]);
             return null;
         }
