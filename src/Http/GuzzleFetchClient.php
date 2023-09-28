@@ -41,7 +41,7 @@ class GuzzleFetchClient implements FetchClientInterface
             ? $options[ClientOptions::REQUEST_OPTIONS]
             : [];
 
-        $this->client = new Client(array_merge($options, $requestOptions));
+        $this->client = new GuzzleClient(array_merge($options, $requestOptions));
     }
 
     public function getClient(): ClientInterface
