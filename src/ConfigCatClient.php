@@ -27,7 +27,7 @@ use Psr\Log\LoggerInterface;
 final class ConfigCatClient implements ClientInterface
 {
     /** @var string */
-    public const SDK_VERSION = "2.1.0";
+    public const SDK_VERSION = "2.1.1";
     private const CONFIG_JSON_CACHE_VERSION = "v2";
 
     /** @var InternalLogger */
