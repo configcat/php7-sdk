@@ -72,7 +72,7 @@ final class ConfigFetcher
             $this->baseUrl = self::GLOBAL_URL;
         }
 
-        $this->userAgentHeader = 'ConfigCat-PHP/'.ConfigCatClient::SDK_VERSION;
+        $this->userAgentHeader = 'ConfigCat-7PHP/'.ConfigCatClient::SDK_VERSION;
 
         $this->logger = $logger;
 
