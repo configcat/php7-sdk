@@ -146,7 +146,9 @@ abstract class Utils
             return null;
         }
 
-        $dateTime = DateTimeImmutable::createFromFormat('U\\.v', sprintf('%1.3F', $timestamp));
+        $timeStampWithMilliseconds = round($timestamp, 3, PHP_ROUND_HALF_UP);
+        $dateTime = DateTimeImmutable::createFromFormat('U\\.u', sprintf('%1.6F', $timeStampWithMilliseconds));
+
         if (!$dateTime) {
             return null;
         }
