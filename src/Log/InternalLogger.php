@@ -10,29 +10,27 @@ use Psr\Log\LoggerInterface;
 /**
  * A Psr\Log\LoggerInterface for internal use only.
  * It handles the ConfigCat SDK specific log level and custom log entry filters.
- * @package ConfigCat
+ *
  * @internal
  */
 class InternalLogger implements LoggerInterface
 {
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     private $logger;
-    /**
-     * @var int
-     */
+
+    /** @var int */
     private $globalLevel;
-    /**
-     * @var array
-     */
+
+    /** @var string[] */
     private $exceptionsToIgnore;
-    /**
-     * @var Hooks
-     */
+
+    /** @var Hooks */
     private $hooks;
 
-    public function __construct(LoggerInterface $logger, $globalLevel, array $exceptionsToIgnore, Hooks $hooks)
+    /**
+     * @param string[] $exceptionsToIgnore
+     */
+    public function __construct(LoggerInterface $logger, int $globalLevel, array $exceptionsToIgnore, Hooks $hooks)
     {
         $this->logger = $logger;
         $this->globalLevel = $globalLevel;
@@ -113,6 +111,9 @@ class InternalLogger implements LoggerInterface
         // Do nothing, only the leveled methods should be used.
     }
 
+    /**
+     * @param mixed[] $context
+     */
     public static function format(string $message, array $context = []): string
     {
         if (array_key_exists('exception', $context)) {
@@ -122,11 +123,17 @@ class InternalLogger implements LoggerInterface
         return $message;
     }
 
+    /**
+     * @param mixed[] $context
+     */
     private function shouldLog(int $currentLevel, array $context): bool
     {
         return $currentLevel >= $this->globalLevel && !$this->hasAnythingToIgnore($context);
     }
 
+    /**
+     * @param mixed[] $context
+     */
     private function hasAnythingToIgnore(array $context): bool
     {
         if (empty($this->exceptionsToIgnore)
@@ -138,6 +145,9 @@ class InternalLogger implements LoggerInterface
         return in_array(get_class($context['exception']), $this->exceptionsToIgnore);
     }
 
+    /**
+     * @param mixed[] $context
+     */
     private function enrichMessage(string $message, array &$context): string
     {
         if (!array_key_exists('event_id', $context)) {

@@ -6,7 +6,6 @@ namespace ConfigCat;
 
 /**
  * Represents a simple key-value pair.
- * @package ConfigCat
  */
 class Pair
 {
@@ -19,8 +18,8 @@ class Pair
     /**
      * Creates a new Pair.
      *
-     * @param string $key The key.
-     * @param mixed $value The value:
+     * @param string $key   the key
+     * @param mixed  $value The value:
      */
     public function __construct(string $key, $value)
     {
@@ -30,8 +29,6 @@ class Pair
 
     /**
      * Gets the key.
-     *
-     * @return string
      */
     public function getKey(): string
     {

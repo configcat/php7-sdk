@@ -54,6 +54,9 @@ class DefaultLogger implements LoggerInterface
         // Do nothing, only the leveled methods should be used.
     }
 
+    /**
+     * @param mixed[] $context
+     */
     private static function logMsg(int $level, string $message, array $context = []): void
     {
         $date = new DateTimeImmutable();
@@ -65,6 +68,9 @@ class DefaultLogger implements LoggerInterface
         error_log(self::interpolate($final, $context));
     }
 
+    /**
+     * @param mixed[] $context
+     */
     private static function interpolate(string $message, array $context = []): string
     {
         $replace = [];

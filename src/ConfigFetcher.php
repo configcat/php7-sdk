@@ -10,36 +10,42 @@ use ConfigCat\Cache\ConfigEntry;
 use ConfigCat\Http\FetchClientInterface;
 use ConfigCat\Http\GuzzleFetchClient;
 use ConfigCat\Log\InternalLogger;
+use Exception;
 use InvalidArgumentException;
 use Psr\Http\Client\ClientExceptionInterface;
 
 /**
  * Class ConfigFetcher This class is used to fetch the latest configuration.
- * @package ConfigCat
+ *
  * @internal
  */
 final class ConfigFetcher
 {
-    const ETAG_HEADER = "ETag";
-    const CONFIG_JSON_NAME = "config_v5.json";
+    public const ETAG_HEADER = 'ETag';
+    public const CONFIG_JSON_NAME = 'config_v5.json';
 
-    const GLOBAL_URL = "https://cdn-global.configcat.com";
-    const EU_ONLY_URL = "https://cdn-eu.configcat.com";
+    public const GLOBAL_URL = 'https://cdn-global.configcat.com';
+    public const EU_ONLY_URL = 'https://cdn-eu.configcat.com';
 
-    const NO_REDIRECT = 0;
-    const SHOULD_REDIRECT = 1;
-    const FORCE_REDIRECT = 2;
+    public const NO_REDIRECT = 0;
+    public const SHOULD_REDIRECT = 1;
+    public const FORCE_REDIRECT = 2;
 
     /** @var InternalLogger */
     private $logger;
+
     /** @var string */
     private $urlPath;
+
     /** @var string */
     private $baseUrl;
+
     /** @var bool */
     private $urlIsCustom = false;
+
     /** @var string */
     private $userAgentHeader;
+
     /** @var FetchClientInterface */
     private $client;
 
@@ -55,16 +61,16 @@ final class ConfigFetcher
     public function __construct(string $sdkKey, InternalLogger $logger, array $options = [])
     {
         if (empty($sdkKey)) {
-            throw new InvalidArgumentException("sdkKey cannot be empty.");
+            throw new InvalidArgumentException('sdkKey cannot be empty.');
         }
 
-        $this->urlPath = sprintf("configuration-files/%s/" . self::CONFIG_JSON_NAME, $sdkKey);
+        $this->urlPath = sprintf('configuration-files/%s/'.self::CONFIG_JSON_NAME, $sdkKey);
 
         if (isset($options[ClientOptions::BASE_URL]) && !empty($options[ClientOptions::BASE_URL])) {
             $this->baseUrl = $options[ClientOptions::BASE_URL];
             $this->urlIsCustom = true;
-        } elseif (isset($options[ClientOptions::DATA_GOVERNANCE]) &&
-            DataGovernance::isValid($options[ClientOptions::DATA_GOVERNANCE])) {
+        } elseif (isset($options[ClientOptions::DATA_GOVERNANCE])
+            && DataGovernance::isValid($options[ClientOptions::DATA_GOVERNANCE])) {
             $this->baseUrl = DataGovernance::isEuOnly($options[ClientOptions::DATA_GOVERNANCE])
                 ? self::EU_ONLY_URL
                 : self::GLOBAL_URL;
@@ -85,9 +91,9 @@ final class ConfigFetcher
     /**
      * Gets the latest configuration from the network.
      *
-     * @param string|null $etag The ETag.
+     * @param ?string $etag the ETag
      *
-     * @return FetchResponse An object describing the result of the fetch.
+     * @return FetchResponse an object describing the result of the fetch
      */
     public function fetch(?string $etag): FetchResponse
     {
@@ -102,7 +108,7 @@ final class ConfigFetcher
             return $response;
         }
 
-        $newUrl = "";
+        $newUrl = '';
         if (isset($response->getConfigEntry()->getConfig()[Config::PREFERENCES][Preferences::BASE_URL])) {
             $newUrl = $response->getConfigEntry()->getConfig()[Config::PREFERENCES][Preferences::BASE_URL];
         }
@@ -112,21 +118,21 @@ final class ConfigFetcher
 
         $preferences = $response->getConfigEntry()->getConfig()[Config::PREFERENCES];
         $redirect = $preferences[Preferences::REDIRECT];
-        if ($this->urlIsCustom && $redirect != self::FORCE_REDIRECT) {
+        if ($this->urlIsCustom && self::FORCE_REDIRECT != $redirect) {
             return $response;
         }
 
-        if ($redirect == self::NO_REDIRECT) {
+        if (self::NO_REDIRECT == $redirect) {
             return $response;
         }
 
-        if ($redirect == self::SHOULD_REDIRECT) {
+        if (self::SHOULD_REDIRECT == $redirect) {
             $this->logger->warning(
-                "The `dataGovernance` parameter specified at the client initialization is ".
-                "not in sync with the preferences on the ConfigCat Dashboard. " .
-                "Read more: https://configcat.com/docs/advanced/data-governance/",
+                'The `dataGovernance` parameter specified at the client initialization is '.
+                'not in sync with the preferences on the ConfigCat Dashboard. '.
+                'Read more: https://configcat.com/docs/advanced/data-governance/',
                 [
-                    'event_id' => 3002
+                    'event_id' => 3002,
                 ]
             );
         }
@@ -135,9 +141,10 @@ final class ConfigFetcher
             return $this->executeFetch($etag, $newUrl, $executionCount - 1);
         }
 
-        $this->logger->error("Redirection loop encountered while trying to fetch config JSON. Please contact us at https://configcat.com/support/", [
-            'event_id' => 1104
+        $this->logger->error('Redirection loop encountered while trying to fetch config JSON. Please contact us at https://configcat.com/support/', [
+            'event_id' => 1104,
         ]);
+
         return $response;
     }
 
@@ -162,30 +169,35 @@ final class ConfigFetcher
             }
 
             if ($statusCode >= 200 && $statusCode < 300) {
-                $this->logger->debug("Fetch was successful: new config fetched.");
-                $entry = ConfigEntry::fromConfigJson($response->getBody()->getContents(), $etag, Utils::getUnixMilliseconds());
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    $message = "Fetching config JSON was successful but the HTTP response content was invalid. JSON error: " . json_last_error_msg();
+                $this->logger->debug('Fetch was successful: new config fetched.');
+                $entry = ConfigEntry::fromConfigJson($response->getBody()->getContents(), $etag ?? '', Utils::getUnixMilliseconds());
+                if (JSON_ERROR_NONE !== json_last_error()) {
+                    $message = 'Fetching config JSON was successful but the HTTP response content was invalid. JSON error: '.json_last_error_msg();
                     $messageCtx = [
-                        'event_id' => 1105
+                        'event_id' => 1105,
                     ];
                     $this->logger->error($message, $messageCtx);
+
                     return FetchResponse::failure(InternalLogger::format($message, $messageCtx));
                 }
+
                 return FetchResponse::success($entry);
-            } elseif ($statusCode === 304) {
-                $this->logger->debug("Fetch was successful: config not modified.");
+            }
+            if (304 === $statusCode) {
+                $this->logger->debug('Fetch was successful: config not modified.');
+
                 return FetchResponse::notModified();
             }
 
-            $message = "Your SDK Key seems to be wrong. You can find the valid SDK Key at https://app.configcat.com/sdkkey. " .
-                "Received unexpected response: " . $statusCode;
+            $message = 'Your SDK Key seems to be wrong. You can find the valid SDK Key at https://app.configcat.com/sdkkey. '.
+                "Received unexpected response: {$statusCode}";
             $messageCtx = [
-                'event_id' => 1100
+                'event_id' => 1100,
             ];
             $this->logger->error($message, $messageCtx);
+
             return FetchResponse::failure(InternalLogger::format($message, $messageCtx));
-        } catch (ClientExceptionInterface|\Exception $exception) {
+        } catch (ClientExceptionInterface|Exception $exception) {
             $message = 'Unexpected error occurred while trying to fetch config JSON.';
             $messageCtx = ['event_id' => 1103, 'exception' => $exception];
             $this->logger->error($message, $messageCtx);

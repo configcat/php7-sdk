@@ -11,12 +11,11 @@ class RefreshResult
 {
     /** @var bool */
     private $isSuccess;
-    /** @var string|null */
+
+    /** @var ?string */
     private $error;
 
     /**
-     * @param bool $isSuccess
-     * @param string|null $error
      * @internal
      */
     public function __construct(bool $isSuccess, ?string $error)
@@ -28,7 +27,7 @@ class RefreshResult
     /**
      * Returns true when the refresh was successful.
      *
-     * @return bool true when the refresh was successful.
+     * @return bool true when the refresh was successful
      */
     public function isSuccess(): bool
     {
@@ -38,7 +37,7 @@ class RefreshResult
     /**
      * Returns the reason if the refresh fails.
      *
-     * @return string|null the reason of the failure.
+     * @return ?string the reason of the failure
      */
     public function getError(): ?string
     {

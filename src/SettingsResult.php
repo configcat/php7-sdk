@@ -9,11 +9,15 @@ namespace ConfigCat;
  */
 class SettingsResult
 {
-    /** @var array */
+    /** @var ?mixed[] */
     public $settings;
+
     /** @var float */
     public $fetchTime;
 
+    /**
+     * @param ?mixed[] $settings
+     */
     public function __construct(?array $settings, float $fetchTime)
     {
         $this->settings = $settings;

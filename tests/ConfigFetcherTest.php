@@ -9,28 +9,27 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\RequestOptions;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class ConfigFetcherTest extends TestCase
 {
-    private $mockSdkKey = "testSdkKey";
-    private $mockEtag = "testEtag";
-    private $mockBody = "{\"key\": \"value\"}";
+    private $mockSdkKey = 'testSdkKey';
+    private $mockEtag = 'testEtag';
+    private $mockBody = '{"key": "value"}';
 
     public function testFetchOk()
     {
         $mockHandler = new MockHandler([
-            new Response(200, [ConfigFetcher::ETAG_HEADER => $this->mockEtag], $this->mockBody)]);
+            new Response(200, [ConfigFetcher::ETAG_HEADER => $this->mockEtag], $this->mockBody), ]);
         $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [
-            ClientOptions::CUSTOM_HANDLER => HandlerStack::create($mockHandler)]);
+            ClientOptions::CUSTOM_HANDLER => HandlerStack::create($mockHandler), ]);
 
-        $response = $fetcher->fetch("old_etag");
+        $response = $fetcher->fetch('old_etag');
 
         $this->assertTrue($response->isFetched());
         $this->assertEquals($this->mockEtag, $response->getConfigEntry()->getEtag());
-        $this->assertEquals("value", $response->getConfigEntry()->getConfig()['key']);
+        $this->assertEquals('value', $response->getConfigEntry()->getConfig()['key']);
         $this->assertNotEmpty($mockHandler->getLastRequest()->getHeader('X-ConfigCat-UserAgent'));
     }
 
@@ -38,9 +37,9 @@ class ConfigFetcherTest extends TestCase
     {
         $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [
             ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
-            new Response(304, [ConfigFetcher::ETAG_HEADER => $this->mockEtag])]))]);
+                new Response(304, [ConfigFetcher::ETAG_HEADER => $this->mockEtag]), ])), ]);
 
-        $response = $fetcher->fetch("");
+        $response = $fetcher->fetch('');
 
         $this->assertTrue($response->isNotModified());
         $this->assertEmpty($response->getConfigEntry()->getEtag());
@@ -51,9 +50,9 @@ class ConfigFetcherTest extends TestCase
     {
         $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [
             ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
-            new Response(400)]))]);
+                new Response(400), ])), ]);
 
-        $response = $fetcher->fetch("");
+        $response = $fetcher->fetch('');
 
         $this->assertTrue($response->isFailed());
         $this->assertEmpty($response->getConfigEntry()->getEtag());
@@ -64,9 +63,9 @@ class ConfigFetcherTest extends TestCase
     {
         $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [
             ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
-            new Response(200, [], "{\"key\": value}")]))]);
+                new Response(200, [], '{"key": value}'), ])), ]);
 
-        $response = $fetcher->fetch("");
+        $response = $fetcher->fetch('');
 
         $this->assertTrue($response->isFailed());
         $this->assertEmpty($response->getConfigEntry()->getEtag());
@@ -76,22 +75,22 @@ class ConfigFetcherTest extends TestCase
     public function testConstructEmptySdkKey()
     {
         $this->expectException(InvalidArgumentException::class);
-        new ConfigFetcher("", Utils::getNullLogger());
+        new ConfigFetcher('', Utils::getNullLogger());
     }
 
     public function testTimeoutException()
     {
-        $fetcher = new ConfigFetcher("api", Utils::getTestLogger(), [ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
-            new ConnectException("timeout", new Request("GET", "test"))
+        $fetcher = new ConfigFetcher('api', Utils::getTestLogger(), [ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
+            new ConnectException('timeout', new Request('GET', 'test')),
         ]))]);
-        $response = $fetcher->fetch("");
+        $response = $fetcher->fetch('');
         $this->assertTrue($response->isFailed());
     }
 
     public function testIntegration()
     {
-        $fetcher = new ConfigFetcher("PKDVCLf-Hq-h-kCzMp-L7Q/PaDVCFk9EpmD6sLpGLltTA", Utils::getTestLogger());
-        $response = $fetcher->fetch("");
+        $fetcher = new ConfigFetcher('PKDVCLf-Hq-h-kCzMp-L7Q/PaDVCFk9EpmD6sLpGLltTA', Utils::getTestLogger());
+        $response = $fetcher->fetch('');
 
         $this->assertTrue($response->isFetched());
 

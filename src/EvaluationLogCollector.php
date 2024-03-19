@@ -9,16 +9,16 @@ namespace ConfigCat;
  */
 class EvaluationLogCollector
 {
-    /** @var array */
+    /** @var string[] */
     private $entries = [];
-
-    public function add($entry): void
-    {
-        $this->entries[] = $entry;
-    }
 
     public function __toString(): string
     {
         return join(PHP_EOL, $this->entries);
+    }
+
+    public function add(string $entry): void
+    {
+        $this->entries[] = $entry;
     }
 }

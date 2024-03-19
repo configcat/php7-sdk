@@ -8,16 +8,16 @@ use ConfigCat\Attributes\SettingAttributes;
 
 /**
  * Describes an array override data source.
- * @package ConfigCat
  */
 class ArrayDataSource extends OverrideDataSource
 {
-    /** @var array */
+    /** @var array<string, mixed> */
     private $overrides;
 
     /**
      * Constructs an array data source.
-     * @param $overrides array The array that contains the overrides.
+     *
+     * @param array<string, mixed> $overrides the array that contains the overrides
      */
     public function __construct(array $overrides)
     {
@@ -26,16 +26,18 @@ class ArrayDataSource extends OverrideDataSource
 
     /**
      * Gets the overrides.
-     * @return array The overrides.
+     *
+     * @return mixed[] the overrides
      */
     public function getOverrides(): array
     {
         $result = [];
         foreach ($this->overrides as $key => $value) {
             $result[$key] = [
-                SettingAttributes::VALUE => $value
+                SettingAttributes::VALUE => $value,
             ];
         }
+
         return $result;
     }
 }

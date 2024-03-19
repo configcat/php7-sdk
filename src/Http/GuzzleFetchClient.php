@@ -13,9 +13,7 @@ use Psr\Http\Message\RequestInterface;
 
 class GuzzleFetchClient implements FetchClientInterface
 {
-    /**
-     * @var Client
-     */
+    /** @var Client */
     private $client;
 
     /**

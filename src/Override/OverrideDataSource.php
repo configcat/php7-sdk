@@ -9,7 +9,6 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Describes an override data source.
- * @package ConfigCat
  */
 abstract class OverrideDataSource implements LoggerAwareInterface
 {
@@ -18,23 +17,27 @@ abstract class OverrideDataSource implements LoggerAwareInterface
 
     /**
      * Gets the overrides.
-     * @return array The overrides.
+     *
+     * @return ?mixed[] the overrides
      */
     abstract public function getOverrides(): ?array;
 
     /**
      * Sets the logger.
-     * @param LoggerInterface $logger The logger.
+     *
+     * @param LoggerInterface $logger the logger
      */
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
 
     /**
      * Creates an override data source that reads the overrides from a file.
-     * @param $filePath string The path to the file.
-     * @return OverrideDataSource The constructed data source.
+     *
+     * @param string $filePath the path to the file
+     *
+     * @return OverrideDataSource the constructed data source
      */
     public static function localFile(string $filePath): OverrideDataSource
     {
@@ -43,8 +46,10 @@ abstract class OverrideDataSource implements LoggerAwareInterface
 
     /**
      * Creates an override data source that reads the overrides from an array.
-     * @param $overrides array The array that contains the overrides.
-     * @return OverrideDataSource The constructed data source.
+     *
+     * @param array<string, mixed> $overrides the array that contains the overrides
+     *
+     * @return OverrideDataSource the constructed data source
      */
     public static function localArray(array $overrides): OverrideDataSource
     {

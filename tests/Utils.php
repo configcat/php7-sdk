@@ -6,10 +6,6 @@ use ConfigCat\Hooks;
 use ConfigCat\Log\DefaultLogger;
 use ConfigCat\Log\InternalLogger;
 use ConfigCat\Log\LogLevel;
-use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\ErrorLogHandler;
-use Monolog\Logger;
-use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Log\NullLogger;
 
 class Utils
@@ -26,21 +22,21 @@ class Utils
 
     public static function formatConfigWithRules(): string
     {
-        return "{ \"f\": { \"key\": { \"v\": \"def\", \"i\": \"defVar\", \"p\": [], \"r\": [
+        return '{ "f": { "key": { "v": "def", "i": "defVar", "p": [], "r": [
             {
-                \"v\": \"fake1\",
-                \"i\": \"id1\",
-                \"t\": 2,
-                \"a\": \"Identifier\",
-                \"c\": \"@test1.com\"
+                "v": "fake1",
+                "i": "id1",
+                "t": 2,
+                "a": "Identifier",
+                "c": "@test1.com"
             },
             {
-                \"v\": \"fake2\",
-                \"i\": \"id2\",
-                \"t\": 2,
-                \"a\": \"Identifier\",
-                \"c\": \"@test2.com\"
+                "v": "fake2",
+                "i": "id2",
+                "t": 2,
+                "a": "Identifier",
+                "c": "@test2.com"
             }
-        ] }}}";
+        ] }}}';
     }
 }
