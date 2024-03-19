@@ -18,7 +18,8 @@ abstract class SegmentComparator
     /**
      * @internal
      */
-    public static function getValidOrDefault(int $value, ?int $defaultValue = null): ?int {
+    public static function getValidOrDefault(int $value, ?int $defaultValue = null): ?int
+    {
         return self::IS_IN <= $value && $value <= self::IS_NOT_IN ? $value : $defaultValue;
     }
 }

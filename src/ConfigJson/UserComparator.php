@@ -120,7 +120,8 @@ abstract class UserComparator
     /**
      * @internal
      */
-    public static function getValidOrDefault(int $value, ?int $defaultValue = null): ?int {
+    public static function getValidOrDefault(int $value, ?int $defaultValue = null): ?int
+    {
         return self::TEXT_IS_ONE_OF <= $value && $value <= self::ARRAY_NOT_CONTAINS_ANY_OF ? $value : $defaultValue;
     }
 }

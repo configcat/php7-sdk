@@ -18,18 +18,22 @@ abstract class RedirectMode
     /**
      * @internal
      */
-    public static function getValidOrDefault(int $value, ?int $defaultValue = null): ?int {
+    public static function getValidOrDefault(int $value, ?int $defaultValue = null): ?int
+    {
         return self::NO <= $value && $value <= self::FORCE ? $value : $defaultValue;
     }
 
     /**
      * @internal
      */
-    public static function ensureValid(int $value): int {
+    public static function ensureValid(int $value): int
+    {
         if (is_null(self::getValidOrDefault($value))) {
             $className = self::class;
-            throw new UnexpectedValueException("$value is not a valid value for $className");
+
+            throw new UnexpectedValueException("{$value} is not a valid value for {$className}");
         }
+
         return $value;
     }
 }

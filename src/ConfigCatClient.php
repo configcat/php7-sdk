@@ -10,7 +10,6 @@ use ConfigCat\Cache\ConfigEntry;
 use ConfigCat\ConfigJson\Config;
 use ConfigCat\ConfigJson\PercentageOption;
 use ConfigCat\ConfigJson\Setting;
-use ConfigCat\ConfigJson\SettingType;
 use ConfigCat\ConfigJson\SettingValue;
 use ConfigCat\ConfigJson\SettingValueContainer;
 use ConfigCat\ConfigJson\TargetingRule;
@@ -538,7 +537,7 @@ final class ConfigCatClient implements ClientInterface
 
     /**
      * @param array<string, mixed> $settings
-     * @param mixed $defaultValue
+     * @param mixed                $defaultValue
      */
     private function evaluate(string $key, array $settings, $defaultValue, ?User $user, float $fetchTime): EvaluationDetails
     {

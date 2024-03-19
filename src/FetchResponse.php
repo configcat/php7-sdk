@@ -47,7 +47,6 @@ final class FetchResponse
         $this->errorException = $errorException;
     }
 
-
     /**
      * Creates a new response with FAILED status.
      *

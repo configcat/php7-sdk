@@ -52,6 +52,10 @@ class OverrideTest extends TestCase
 
     /**
      * @dataProvider provideOverrideValueTypeMismatchShouldBeHandledCorrectly_Dictionary
+     *
+     * @param mixed $overrideValue
+     * @param mixed $defaultValue
+     * @param mixed $expectedReturnValue
      */
     public function testOverrideValueTypeMismatchShouldBeHandledCorrectlyDictionary($overrideValue, $defaultValue, $expectedReturnValue)
     {
@@ -131,6 +135,9 @@ class OverrideTest extends TestCase
 
     /**
      * @dataProvider provideOverrideValueTypeMismatchShouldBeHandledCorrectly_SimplifiedConfig
+     *
+     * @param mixed $defaultValue
+     * @param mixed $expectedReturnValue
      */
     public function testOverrideValueTypeMismatchShouldBeHandledCorrectlySimplifiedConfig(string $overrideValueJson, $defaultValue, $expectedReturnValue)
     {

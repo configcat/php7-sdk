@@ -19,10 +19,12 @@ abstract class SettingValue
     public const DOUBLE = 'd';
 
     /**
-     * @param mixed $settingValue 
-     * @param int|stdClass $settingType 
-     * @return null|bool|float|int|string 
+     * @param mixed        $settingValue
+     * @param int|stdClass $settingType
+     *
      * @throws UnexpectedValueException
+     *
+     * @return null|bool|float|int|string
      *
      * @internal
      */
@@ -71,8 +73,9 @@ abstract class SettingValue
     }
 
     /**
-     * @param mixed $settingValue 
-     * @return mixed 
+     * @param mixed $settingValue
+     *
+     * @return mixed
      *
      * @internal
      */

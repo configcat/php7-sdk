@@ -29,7 +29,6 @@ final class ConfigFetcher
     public const GLOBAL_URL = 'https://cdn-global.configcat.com';
     public const EU_ONLY_URL = 'https://cdn-eu.configcat.com';
 
-
     /** @var InternalLogger */
     private $logger;
 

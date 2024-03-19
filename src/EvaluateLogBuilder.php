@@ -9,14 +9,12 @@ use ConfigCat\ConfigJson\PrerequisiteFlagCondition;
 use ConfigCat\ConfigJson\Segment;
 use ConfigCat\ConfigJson\SegmentComparator;
 use ConfigCat\ConfigJson\SegmentCondition;
-use ConfigCat\ConfigJson\SettingType;
 use ConfigCat\ConfigJson\SettingValue;
 use ConfigCat\ConfigJson\SettingValueContainer;
 use ConfigCat\ConfigJson\TargetingRule;
 use ConfigCat\ConfigJson\UserComparator;
 use ConfigCat\ConfigJson\UserCondition;
 use stdClass;
-use UnexpectedValueException;
 
 /**
  * @internal
@@ -207,7 +205,7 @@ final class EvaluateLogBuilder
 
     /**
      * @param array<string, mixed> $condition
-     * @param mixed $segments 
+     * @param mixed                $segments
      */
     public function appendSegmentCondition(array $condition, $segments): self
     {
@@ -242,8 +240,8 @@ final class EvaluateLogBuilder
 
     /**
      * @param array<string, mixed> $targetingRule
-     * @param int|stdClass $settingType 
-     * @param bool|string $isMatchOrError 
+     * @param int|stdClass         $settingType
+     * @param bool|string          $isMatchOrError
      */
     public function appendTargetingRuleConsequence(array $targetingRule, $settingType, $isMatchOrError, bool $newLine): self
     {
@@ -257,7 +255,7 @@ final class EvaluateLogBuilder
     }
 
     /**
-     * @param mixed $value 
+     * @param mixed $value
      */
     public static function formatSettingValue($value): string
     {
@@ -372,7 +370,7 @@ final class EvaluateLogBuilder
     }
 
     /**
-     * @param mixed $comparisonValue 
+     * @param mixed $comparisonValue
      */
     private function appendUserConditionString(string $comparisonAttribute, ?int $comparator, $comparisonValue, bool $isSensitive): self
     {
@@ -384,7 +382,7 @@ final class EvaluateLogBuilder
     }
 
     /**
-     * @param mixed $comparisonValue 
+     * @param mixed $comparisonValue
      */
     private function appendUserConditionStringList(string $comparisonAttribute, ?int $comparator, $comparisonValue, bool $isSensitive): self
     {
@@ -410,7 +408,7 @@ final class EvaluateLogBuilder
     }
 
     /**
-     * @param mixed $comparisonValue 
+     * @param mixed $comparisonValue
      */
     private function appendUserConditionNumber(string $comparisonAttribute, ?int $comparator, $comparisonValue, bool $isDateTime = false): self
     {
@@ -431,7 +429,7 @@ final class EvaluateLogBuilder
 
     /**
      * @param array<string, mixed> $targetingRule
-     * @param int|stdClass $settingType 
+     * @param int|stdClass         $settingType
      */
     private function appendTargetingRuleThenPart(array $targetingRule, $settingType, bool $newLine): self
     {

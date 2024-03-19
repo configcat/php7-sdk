@@ -14,10 +14,11 @@ abstract class PercentageOption extends SettingValueContainer
     public const PERCENTAGE = 'p';
 
     /**
-     * @param mixed $percentageOptions 
-     * @return list<array<string, mixed>>
+     * @param mixed $percentageOptions
      *
      * @throws UnexpectedValueException
+     *
+     * @return list<array<string, mixed>>
      *
      * @internal
      */
@@ -31,10 +32,11 @@ abstract class PercentageOption extends SettingValueContainer
     }
 
     /**
-     * @param mixed $percentageOption 
-     * @return array<string, mixed>
+     * @param mixed $percentageOption
      *
      * @throws UnexpectedValueException
+     *
+     * @return array<string, mixed>
      *
      * @internal
      */

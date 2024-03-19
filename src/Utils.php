@@ -20,20 +20,6 @@ if (!defined('PHP_FLOAT_EPSILON')) {
 abstract class Utils
 {
     /**
-     * @param mixed $value 
-     */
-    private static function isConvertibleToString($value): bool {
-        // Based on: https://stackoverflow.com/a/5496674
-        if (is_array($value)) {
-            return false;
-        }
-        if (is_object($value)) {
-            return method_exists($value, '__toString');
-        }
-        return settype($value, 'string') !== false;
-    }
-
-    /**
      * Returns the string representation of a value.
      *
      * @param mixed $value the value
@@ -51,19 +37,18 @@ abstract class Utils
                 return (string) $value;
             }
         } catch (Throwable $ex) {
-            /* intentional no-op */
+            // intentional no-op
         }
 
         try {
             return str_replace(["\r\n", "\r", "\n"], ' ', var_export($value, true));
-        }
-        catch (Throwable $ex) {
-            return "<inconvertible value>";
+        } catch (Throwable $ex) {
+            return '<inconvertible value>';
         }
     }
 
     /**
-     * @param float|int $number 
+     * @param float|int $number
      */
     public static function numberToString($number): string
     {
@@ -99,7 +84,7 @@ abstract class Utils
     }
 
     /**
-     * @return false|float 
+     * @return false|float
      */
     public static function numberFromString(string $str)
     {
@@ -164,7 +149,7 @@ abstract class Utils
     }
 
     /**
-     * @param mixed $value 
+     * @param mixed $value
      */
     public static function isStringList($value): bool
     {
@@ -197,6 +182,22 @@ abstract class Utils
     }
 
     /**
+     * @param mixed $value
+     */
+    private static function isConvertibleToString($value): bool
+    {
+        // Based on: https://stackoverflow.com/a/5496674
+        if (is_array($value)) {
+            return false;
+        }
+        if (is_object($value)) {
+            return method_exists($value, '__toString');
+        }
+
+        return false !== settype($value, 'string');
+    }
+
+    /**
      * @param mixed[]                                         $array   the array to check
      * @param callable(mixed, int|string, int, mixed[]): bool $isMatch a function to execute for each element in the array; it should return a truthy value to indicate the element passes the test, and a falsy value otherwise
      *
@@ -216,7 +217,7 @@ abstract class Utils
     }
 
     /**
-     * @param float|int $abs 
+     * @param float|int $abs
      */
     private static function getExponent($abs): int
     {
@@ -228,7 +229,7 @@ abstract class Utils
 
     // Based on: https://stackoverflow.com/a/31888253/8656352
     /**
-     * @param float|int $number 
+     * @param float|int $number
      */
     private static function getSignificantDecimals($number): int
     {

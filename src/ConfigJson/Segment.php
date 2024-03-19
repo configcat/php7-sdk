@@ -15,10 +15,11 @@ abstract class Segment
     public const CONDITIONS = 'r';
 
     /**
-     * @param mixed $segments 
-     * @return list<array<string, mixed>>
+     * @param mixed $segments
      *
      * @throws UnexpectedValueException
+     *
+     * @return list<array<string, mixed>>
      *
      * @internal
      */
@@ -32,10 +33,11 @@ abstract class Segment
     }
 
     /**
-     * @param mixed $segment 
-     * @return array<string, mixed>
+     * @param mixed $segment
      *
      * @throws UnexpectedValueException
+     *
+     * @return array<string, mixed>
      *
      * @internal
      */

@@ -27,4 +27,4 @@ final class SettingsResult
         $this->fetchTime = $fetchTime;
         $this->hasConfigJson = $hasConfigJson;
     }
- }
+}

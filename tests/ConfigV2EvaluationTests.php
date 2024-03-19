@@ -56,6 +56,8 @@ class ConfigV2EvaluationTests extends TestCase
 
     /**
      * @dataProvider provideTestDataForComparisonAttributeConversionToCanonicalStringRepresentation
+     *
+     * @param mixed $customAttributeValue
      */
     public function testComparisonAttributeConversionToCanonicalStringRepresentation(string $key, $customAttributeValue, string $expectedReturnValue)
     {
@@ -338,6 +340,9 @@ class ConfigV2EvaluationTests extends TestCase
 
     /**
      * @dataProvider provideTestDataForUserObjectAttributeValueConversion_NonTextComparisons
+     *
+     * @param mixed $customAttributeValue
+     * @param mixed $expectedReturnValue
      */
     public function testUserObjectAttributeValueConversionNonTextComparisons(
         string $sdkKey,
@@ -434,6 +439,9 @@ class ConfigV2EvaluationTests extends TestCase
 
     /**
      * @dataProvider provideTestDataForPrerequisiteFlagComparisonValueTypeMismatch
+     *
+     * @param mixed $prerequisiteFlagValue
+     * @param mixed $expectedReturnValue
      */
     public function testPrerequisiteFlagComparisonValueTypeMismatch(string $key, string $prerequisiteFlagKey, $prerequisiteFlagValue, $expectedReturnValue)
     {
@@ -497,6 +505,8 @@ class ConfigV2EvaluationTests extends TestCase
 
     /**
      * @dataProvider provideTestDataForPrerequisiteFlagOverride
+     *
+     * @param mixed $expectedReturnValue
      */
     public function testPrerequisiteFlagOverride(string $key, string $userId, string $email, ?int $overrideBehaviour, $expectedReturnValue)
     {
@@ -549,6 +559,8 @@ class ConfigV2EvaluationTests extends TestCase
 
     /**
      * @dataProvider provideTestDataForConfigSaltAndSegmentsOverride
+     *
+     * @param mixed $expectedReturnValue
      */
     public function testConfigSaltAndSegmentsOverride(string $key, string $userId, string $email, ?int $overrideBehaviour, $expectedReturnValue)
     {

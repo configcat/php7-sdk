@@ -16,10 +16,11 @@ abstract class TargetingRule
     public const PERCENTAGE_OPTIONS = 'p';
 
     /**
-     * @param mixed $targetingRules 
-     * @return list<array<string, mixed>>
+     * @param mixed $targetingRules
      *
      * @throws UnexpectedValueException
+     *
+     * @return list<array<string, mixed>>
      *
      * @internal
      */
@@ -33,10 +34,11 @@ abstract class TargetingRule
     }
 
     /**
-     * @param mixed $targetingRule 
-     * @return array<string, mixed>
+     * @param mixed $targetingRule
      *
      * @throws UnexpectedValueException
+     *
+     * @return array<string, mixed>
      *
      * @internal
      */

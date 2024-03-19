@@ -4,7 +4,6 @@ namespace ConfigCat\Tests\Helpers;
 
 use ConfigCat\Log\LogLevel;
 use Psr\Log\LoggerInterface;
-use Stringable;
 
 class FakeLogger implements LoggerInterface
 {
@@ -71,6 +70,7 @@ class FakeLogger implements LoggerInterface
 
     /**
      * @param mixed[] $context
+     * @param mixed   $message
      */
     private function logMsg(int $level, $message, array $context = []): void
     {
@@ -84,6 +84,7 @@ class FakeLogger implements LoggerInterface
 
     /**
      * @param mixed[] $context
+     * @param mixed   $message
      */
     private static function interpolate($message, array $context = []): string
     {

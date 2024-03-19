@@ -46,9 +46,9 @@ abstract class Config
     }
 
     /**
-     * @return array<string, mixed>
-     *
      * @throws UnexpectedValueException
+     *
+     * @return array<string, mixed>
      */
     public static function deserialize(string $json): array
     {

@@ -46,10 +46,10 @@ abstract class ConfigCache implements LoggerAwareInterface
      *
      * @param string $key identifier for the cached value
      *
-     * @return ConfigEntry cached value for the given key, or `ConfigEntry::empty()` if it's missing
-     *
      * @throws InvalidArgumentException
      *                                  If the $key is not a legal value
+     *
+     * @return ConfigEntry cached value for the given key, or `ConfigEntry::empty()` if it's missing
      */
     public function load(string $key): ConfigEntry
     {

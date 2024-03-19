@@ -39,7 +39,7 @@ class EvaluationDetails
     private $matchedPercentageOption;
 
     /**
-     * @param mixed    $value
+     * @param mixed                 $value
      * @param ?array<string, mixed> $matchedTargetingRule
      * @param ?array<string, mixed> $matchedPercentageOption
      *

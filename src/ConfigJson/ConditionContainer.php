@@ -16,10 +16,11 @@ abstract class ConditionContainer
     public const SEGMENT_CONDITION = 's';
 
     /**
-     * @param mixed $conditions 
-     * @return list<array<string, mixed>>
+     * @param mixed $conditions
      *
      * @throws UnexpectedValueException
+     *
+     * @return list<array<string, mixed>>
      *
      * @internal
      */
@@ -34,9 +35,10 @@ abstract class ConditionContainer
 
     /**
      * @param mixed $condition
-     * @return array<string, mixed>
      *
      * @throws UnexpectedValueException
+     *
+     * @return array<string, mixed>
      *
      * @internal
      */

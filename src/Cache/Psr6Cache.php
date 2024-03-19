@@ -22,9 +22,9 @@ class Psr6Cache extends ConfigCache
      *
      * @param string $key identifier for the cached value
      *
-     * @return ?string cached value for the given key, or null if it's missing
-     *
      * @throws InvalidArgumentException if the $key is not a legal value
+     *
+     * @return ?string cached value for the given key, or null if it's missing
      */
     protected function get(string $key): ?string
     {

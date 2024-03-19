@@ -3,9 +3,7 @@
 namespace ConfigCat\Tests;
 
 use ConfigCat\Tests\Helpers\Utils;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
-use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 class UtilsTest extends TestCase
 {
@@ -52,7 +50,7 @@ class UtilsTest extends TestCase
     /**
      * @dataProvider provideTestDataForNumberToString
      *
-     * @param float|int $number 
+     * @param float|int $number
      */
     public function testNumberToString($number, string $expectedReturnValue)
     {

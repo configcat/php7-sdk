@@ -24,19 +24,25 @@ abstract class SettingType
     /**
      * @internal
      */
-    public static function getValidOrDefault(int $value, ?int $defaultValue = null): ?int {
+    public static function getValidOrDefault(int $value, ?int $defaultValue = null): ?int
+    {
         return self::BOOLEAN <= $value && $value <= self::DOUBLE ? $value : $defaultValue;
     }
 
     /**
      * @internal
      */
-    public static function getName(int $value): string {
+    public static function getName(int $value): string
+    {
         switch ($value) {
             case self::BOOLEAN: return 'BOOLEAN';
+
             case self::STRING: return 'STRING';
+
             case self::INT: return 'INT';
+
             case self::DOUBLE: return 'DOUBLE';
+
             default: return '<invalid type>';
         }
     }

@@ -51,13 +51,13 @@ final class EvaluateContext
     public $isMissingUserObjectAttributeLogged;
 
     /** @var ?EvaluateLogBuilder */
-    public $logBuilder = null; // initialized by RolloutEvaluator.evaluate
+    public $logBuilder; // initialized by RolloutEvaluator.evaluate
 
     /** @var null|int|stdClass */
-    private $settingType = null;
+    private $settingType;
 
     /** @var null|list<string> */
-    private $visitedFlags = null;
+    private $visitedFlags;
 
     /**
      * @param string               $key      the key of the setting to evaluate
@@ -80,7 +80,7 @@ final class EvaluateContext
     }
 
     /**
-     * @param mixed $setting 
+     * @param mixed $setting
      */
     public static function forPrerequisiteFlag(string $key, $setting, EvaluateContext $dependentFlagContext): EvaluateContext
     {
@@ -92,7 +92,7 @@ final class EvaluateContext
     }
 
     /**
-     * @return int|stdClass 
+     * @return int|stdClass
      */
     public function getSettingType()
     {
@@ -117,15 +117,15 @@ final class EvaluateResult
 {
     /** @var array<string, mixed> */
     public $selectedValue;
-    
+
     /** @var ?array<string, mixed> */
-    public $matchedTargetingRule = null;
-    
+    public $matchedTargetingRule;
+
     /** @var ?array<string, mixed> */
-    public $matchedPercentageOption = null;
+    public $matchedPercentageOption;
 
     /**
-     * @param array<string, mixed>      $selectedValue
+     * @param array<string, mixed>  $selectedValue
      * @param ?array<string, mixed> $matchedTargetingRule
      * @param ?array<string, mixed> $matchedPercentageOption
      */
@@ -156,18 +156,19 @@ final class RolloutEvaluator
     /**
      * @param InternalLogger $logger the logger instance
      */
-    public function __construct(InternalLogger $logger) {
+    public function __construct(InternalLogger $logger)
+    {
         $this->logger = $logger;
     }
 
     /**
      * @param mixed           $defaultValue the value to return in case of failure
-     * @param mixed $returnValue 
+     * @param mixed           $returnValue
      * @param EvaluateContext $context      the context object
      *
-     * @return EvaluateResult the result of the evaluation
-     *
      * @throws UnexpectedValueException
+     *
+     * @return EvaluateResult the result of the evaluation
      */
     public function evaluate($defaultValue, EvaluateContext $context, &$returnValue): EvaluateResult
     {
@@ -195,7 +196,9 @@ final class RolloutEvaluator
 
             return $result;
         } catch (Throwable $ex) {
-            if ($logBuilder) $logBuilder->resetIndent()->increaseIndent();
+            if ($logBuilder) {
+                $logBuilder->resetIndent()->increaseIndent();
+            }
 
             $returnValue = $defaultValue;
 
@@ -243,7 +246,9 @@ final class RolloutEvaluator
     {
         $logBuilder = $context->logBuilder;
 
-        if ($logBuilder) $logBuilder->newLine('Evaluating targeting rules and applying the first match if any:');
+        if ($logBuilder) {
+            $logBuilder->newLine('Evaluating targeting rules and applying the first match if any:');
+        }
 
         foreach ($targetingRules as $targetingRule) {
             TargetingRule::ensure($targetingRule);
@@ -272,11 +277,15 @@ final class RolloutEvaluator
 
             $percentageOptions = $targetingRule[TargetingRule::PERCENTAGE_OPTIONS];
 
-            if ($logBuilder) $logBuilder->increaseIndent();
+            if ($logBuilder) {
+                $logBuilder->increaseIndent();
+            }
 
             $evaluateResult = $this->evaluatePercentageOptions($percentageOptions, $targetingRule, $context);
             if ($evaluateResult) {
-                if ($logBuilder) $logBuilder->decreaseIndent();
+                if ($logBuilder) {
+                    $logBuilder->decreaseIndent();
+                }
 
                 return $evaluateResult;
             }
@@ -300,7 +309,9 @@ final class RolloutEvaluator
         $logBuilder = $context->logBuilder;
 
         if (!isset($context->user)) {
-            if ($logBuilder) $logBuilder->newLine('Skipping % options because the User Object is missing.');
+            if ($logBuilder) {
+                $logBuilder->newLine('Skipping % options because the User Object is missing.');
+            }
 
             if (!$context->isMissingUserObjectLogged) {
                 $this->logUserObjectIsMissing($context->key);
@@ -321,7 +332,9 @@ final class RolloutEvaluator
         }
 
         if (!isset($percentageOptionsAttributeValue)) {
-            if ($logBuilder) $logBuilder->newLine("Skipping % options because the User.{$percentageOptionsAttributeName} attribute is missing.");
+            if ($logBuilder) {
+                $logBuilder->newLine("Skipping % options because the User.{$percentageOptionsAttributeName} attribute is missing.");
+            }
 
             if (!$context->isMissingUserObjectAttributeLogged) {
                 $this->logUserObjectAttributeIsMissingPercentage($context->key, $percentageOptionsAttributeName);
@@ -331,12 +344,16 @@ final class RolloutEvaluator
             return null;
         }
 
-        if ($logBuilder) $logBuilder->newLine("Evaluating % options based on the User.{$percentageOptionsAttributeName} attribute:");
+        if ($logBuilder) {
+            $logBuilder->newLine("Evaluating % options based on the User.{$percentageOptionsAttributeName} attribute:");
+        }
 
         $sha1 = sha1($context->key.self::userAttributeValueToString($percentageOptionsAttributeValue));
         $hashValue = intval(substr($sha1, 0, 7), 16) % 100;
 
-        if ($logBuilder) $logBuilder->newLine("- Computing hash in the [0..99] range from User.{$percentageOptionsAttributeName} => {$hashValue} (this value is sticky and consistent across all SDKs)");
+        if ($logBuilder) {
+            $logBuilder->newLine("- Computing hash in the [0..99] range from User.{$percentageOptionsAttributeName} => {$hashValue} (this value is sticky and consistent across all SDKs)");
+        }
 
         $bucket = 0;
         $optionNumber = 1;
@@ -370,10 +387,11 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param list<array<string, mixed>>                                           $conditions
+     * @param list<array<string, mixed>> $conditions
      * @param callable(array<string, mixed>, string&): (null|array<string, mixed>) $conditionAccessor
-     * @param array<string, mixed>                                                 $targetingRule
-     * @return bool|string 
+     * @param array<string, mixed> $targetingRule
+     *
+     * @return bool|string
      */
     private function evaluateConditions(array $conditions, callable $conditionAccessor, ?array $targetingRule, string $contextSalt, EvaluateContext $context)
     {
@@ -382,7 +400,9 @@ final class RolloutEvaluator
         $logBuilder = $context->logBuilder;
         $newLineBeforeThen = false;
 
-        if ($logBuilder) $logBuilder->newLine('- ');
+        if ($logBuilder) {
+            $logBuilder->newLine('- ');
+        }
 
         $i = 0;
         foreach ($conditions as $condition) {
@@ -444,7 +464,9 @@ final class RolloutEvaluator
         }
 
         if ($targetingRule) {
-            if ($logBuilder) $logBuilder->appendTargetingRuleConsequence($targetingRule, $context->getSettingType(), $result, $newLineBeforeThen);
+            if ($logBuilder) {
+                $logBuilder->appendTargetingRuleConsequence($targetingRule, $context->getSettingType(), $result, $newLineBeforeThen);
+            }
         }
 
         return $result;
@@ -452,12 +474,15 @@ final class RolloutEvaluator
 
     /**
      * @param array<string, mixed> $condition
-     * @return bool|string 
+     *
+     * @return bool|string
      */
     private function evaluateUserCondition(array $condition, string $contextSalt, EvaluateContext $context)
     {
         $logBuilder = $context->logBuilder;
-        if ($logBuilder) $logBuilder->appendUserCondition($condition);
+        if ($logBuilder) {
+            $logBuilder->appendUserCondition($condition);
+        }
 
         if (!isset($context->user)) {
             if (!$context->isMissingUserObjectLogged) {
@@ -671,7 +696,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $comparisonValue 
+     * @param mixed $comparisonValue
      */
     private static function evaluateTextEquals(string $text, $comparisonValue, bool $negate): bool
     {
@@ -681,7 +706,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $comparisonValue 
+     * @param mixed $comparisonValue
      */
     private static function evaluateSensitiveTextEquals(string $text, $comparisonValue, string $configJsonSalt, string $contextSalt, bool $negate): bool
     {
@@ -693,7 +718,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $comparisonValues 
+     * @param mixed $comparisonValues
      */
     private static function evaluateTextIsOneOf(string $text, $comparisonValues, bool $negate): bool
     {
@@ -709,7 +734,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $comparisonValues 
+     * @param mixed $comparisonValues
      */
     private static function evaluateSensitiveTextIsOneOf(string $text, $comparisonValues, string $configJsonSalt, string $contextSalt, bool $negate): bool
     {
@@ -727,7 +752,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $comparisonValues 
+     * @param mixed $comparisonValues
      */
     private static function evaluateTextSliceEqualsAnyOf(string $text, $comparisonValues, bool $startsWith, bool $negate): bool
     {
@@ -747,7 +772,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $comparisonValues 
+     * @param mixed $comparisonValues
      */
     private static function evaluateSensitiveTextSliceEqualsAnyOf(string $text, $comparisonValues, string $configJsonSalt, string $contextSalt, bool $startsWith, bool $negate): bool
     {
@@ -785,7 +810,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $comparisonValues 
+     * @param mixed $comparisonValues
      */
     private static function evaluateTextContainsAnyOf(string $text, $comparisonValues, bool $negate): bool
     {
@@ -801,7 +826,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $comparisonValues 
+     * @param mixed $comparisonValues
      */
     private static function evaluateSemVerIsOneOf(Version $version, $comparisonValues, bool $negate): bool
     {
@@ -837,7 +862,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $comparisonValue 
+     * @param mixed $comparisonValue
      */
     private static function evaluateSemVerRelation(Version $version, int $comparator, $comparisonValue): bool
     {
@@ -865,7 +890,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $comparisonValue 
+     * @param mixed $comparisonValue
      */
     private static function evaluateNumberRelation(float $number, int $comparator, $comparisonValue): bool
     {
@@ -889,7 +914,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $comparisonValue 
+     * @param mixed $comparisonValue
      */
     private static function evaluateDateTimeRelation(float $number, $comparisonValue, bool $before): bool
     {
@@ -900,7 +925,7 @@ final class RolloutEvaluator
 
     /**
      * @param list<string> $array
-     * @param mixed $comparisonValues 
+     * @param mixed        $comparisonValues
      */
     private static function evaluateArrayContainsAnyOf(array $array, $comparisonValues, bool $negate): bool
     {
@@ -919,7 +944,7 @@ final class RolloutEvaluator
 
     /**
      * @param list<string> $array
-     * @param mixed $comparisonValues 
+     * @param mixed        $comparisonValues
      */
     private static function evaluateSensitiveArrayContainsAnyOf(array $array, $comparisonValues, string $configJsonSalt, string $contextSalt, bool $negate): bool
     {
@@ -944,7 +969,9 @@ final class RolloutEvaluator
     private function evaluatePrerequisiteFlagCondition(array $condition, EvaluateContext $context): bool
     {
         $logBuilder = $context->logBuilder;
-        if ($logBuilder) $logBuilder->appendPrerequisiteFlagCondition($condition, $context->settings);
+        if ($logBuilder) {
+            $logBuilder->appendPrerequisiteFlagCondition($condition, $context->settings);
+        }
 
         $prerequisiteFlagKey = $condition[PrerequisiteFlagCondition::PREREQUISITE_FLAG_KEY] ?? null;
         if (!is_string($prerequisiteFlagKey)) {
@@ -1027,14 +1054,17 @@ final class RolloutEvaluator
 
     /**
      * @param array<string, mixed> $condition
-     * @return bool|string 
+     *
+     * @return bool|string
      */
     private function evaluateSegmentCondition(array $condition, EvaluateContext $context)
     {
         $segments = $context->setting[Setting::CONFIG_SEGMENTS];
 
         $logBuilder = $context->logBuilder;
-        if ($logBuilder) $logBuilder->appendSegmentCondition($condition, $segments);
+        if ($logBuilder) {
+            $logBuilder->appendSegmentCondition($condition, $segments);
+        }
 
         if (!$context->user) {
             if (!$context->isMissingUserObjectLogged) {
@@ -1116,18 +1146,20 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $value 
+     * @param mixed $value
      */
     private static function ensureConfigJsonSalt($value): string
     {
         if (!is_string($value)) {
             throw new UnexpectedValueException('Config JSON salt is missing or invalid.');
         }
+
         return $value;
     }
 
     /**
-     * @param mixed $comparisonValues 
+     * @param mixed $comparisonValues
+     *
      * @return list<mixed>
      */
     private static function ensureComparisonValues($comparisonValues): array
@@ -1140,7 +1172,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $comparisonValue 
+     * @param mixed $comparisonValue
      */
     private static function ensureStringComparisonValue($comparisonValue): string
     {
@@ -1152,7 +1184,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $comparisonValue 
+     * @param mixed $comparisonValue
      */
     private static function ensureNumberComparisonValue($comparisonValue): float
     {
@@ -1169,7 +1201,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $attributeValue 
+     * @param mixed $attributeValue
      */
     private static function userAttributeValueToString($attributeValue): string
     {
@@ -1192,7 +1224,7 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $attributeValue 
+     * @param mixed                $attributeValue
      * @param array<string, mixed> $condition
      */
     private function getUserAttributeValueAsText(string $attributeName, $attributeValue, array $condition, string $key): string
@@ -1208,8 +1240,9 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $attributeValue 
+     * @param mixed                $attributeValue
      * @param array<string, mixed> $condition
+     *
      * @return string|Version
      */
     private function getUserAttributeValueAsSemVer(string $attributeName, $attributeValue, array $condition, string $key)
@@ -1227,8 +1260,9 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $attributeValue 
+     * @param mixed                $attributeValue
      * @param array<string, mixed> $condition
+     *
      * @return float|string
      */
     private function getUserAttributeValueAsNumber(string $attributeName, $attributeValue, array $condition, string $key)
@@ -1249,8 +1283,9 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $attributeValue 
+     * @param mixed                $attributeValue
      * @param array<string, mixed> $condition
+     *
      * @return float|string
      */
     private function getUserAttributeValueAsUnixTimeSeconds(string $attributeName, $attributeValue, array $condition, string $key)
@@ -1275,10 +1310,10 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $attributeValue 
+     * @param mixed                $attributeValue
      * @param array<string, mixed> $condition
      *
-     * @return string|list<string>
+     * @return list<string>|string
      */
     private function getUserAttributeValueAsStringArray(string $attributeName, $attributeValue, array $condition, string $key)
     {
@@ -1353,8 +1388,8 @@ final class RolloutEvaluator
     }
 
     /**
-     * @param mixed $returnValue 
-     * @param mixed $defaultValue 
+     * @param mixed $returnValue
+     * @param mixed $defaultValue
      */
     private function checkDefaultValueTypeMismatch($returnValue, $defaultValue, int $settingType): void
     {

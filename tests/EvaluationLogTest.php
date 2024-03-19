@@ -71,6 +71,9 @@ class EvaluationLogTest extends TestCase
 
     /**
      * @dataProvider provideTestData
+     *
+     * @param mixed $defaultValue
+     * @param mixed $expectedReturnValue
      */
     public function testEvaluationLog(
         string $testSetName,

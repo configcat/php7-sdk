@@ -28,10 +28,11 @@ abstract class Setting extends SettingValueContainer
     public const CONFIG_SEGMENTS = '__configSegments';
 
     /**
-     * @param mixed $settings 
-     * @return array<string, mixed>
+     * @param mixed $settings
      *
      * @throws UnexpectedValueException
+     *
+     * @return array<string, mixed>
      *
      * @internal
      */
@@ -45,10 +46,11 @@ abstract class Setting extends SettingValueContainer
     }
 
     /**
-     * @param mixed $setting 
-     * @return array<string, mixed>
+     * @param mixed $setting
      *
      * @throws UnexpectedValueException
+     *
+     * @return array<string, mixed>
      *
      * @internal
      */
@@ -63,7 +65,8 @@ abstract class Setting extends SettingValueContainer
 
     /**
      * @param array<string, mixed> $setting
-     * @return null|int|stdClass 
+     *
+     * @return null|int|stdClass
      *
      * @internal
      */
@@ -87,7 +90,8 @@ abstract class Setting extends SettingValueContainer
     }
 
     /**
-     * @param mixed $value 
+     * @param mixed $value
+     *
      * @return array<string, mixed>
      *
      * @internal

@@ -77,7 +77,7 @@ class Utils
 
     /**
      * @param list<list<mixed>> testData
-     * @param callable(list<mixed>, int): array<string, list<mixed>> $getDescription
+     * @param callable(list<mixed>, int): array<string, <|list|mixed>> $getDescription
      */
     public static function withDescription(array $testData, callable $getDescription)
     {

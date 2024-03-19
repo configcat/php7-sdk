@@ -18,7 +18,8 @@ abstract class PrerequisiteFlagComparator
     /**
      * @internal
      */
-    public static function getValidOrDefault(int $value, ?int $defaultValue = null): ?int {
+    public static function getValidOrDefault(int $value, ?int $defaultValue = null): ?int
+    {
         return self::EQUALS <= $value && $value <= self::NOT_EQUALS ? $value : $defaultValue;
     }
 }
