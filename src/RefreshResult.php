@@ -4,43 +4,55 @@ declare(strict_types=1);
 
 namespace ConfigCat;
 
+use Throwable;
+
 /**
  * Represents the result of forceRefresh().
  */
 class RefreshResult
 {
-    /** @var bool */
-    private $isSuccess;
-
     /** @var ?string */
-    private $error;
+    private $errorMessage;
+
+    /** @var ?Throwable */
+    private $errorException;
 
     /**
      * @internal
      */
-    public function __construct(bool $isSuccess, ?string $error)
+    public function __construct(?string $errorMessage = null, ?Throwable $errorException = null)
     {
-        $this->isSuccess = $isSuccess;
-        $this->error = $error;
+        $this->errorMessage = $errorMessage;
+        $this->errorException = $errorException;
     }
 
     /**
-     * Returns true when the refresh was successful.
+     * Indicates whether the operation was successful or not.
      *
-     * @return bool true when the refresh was successful
+     * @return bool `true` when the refresh was successful
      */
     public function isSuccess(): bool
     {
-        return $this->isSuccess;
+        return !isset($this->errorMessage);
     }
 
     /**
-     * Returns the reason if the refresh fails.
+     * Returns the error message in case the operation failed, otherwise `null`.
      *
      * @return ?string the reason of the failure
      */
-    public function getError(): ?string
+    public function getErrorMessage(): ?string
     {
-        return $this->error;
+        return $this->errorMessage;
+    }
+
+    /**
+     * Returns the `Throwable` object related to the error in case the operation failed (if any).
+     *
+     * @return ?Throwable the `Throwable` object related to the error
+     */
+    public function getErrorException(): ?Throwable
+    {
+        return $this->errorException;
     }
 }

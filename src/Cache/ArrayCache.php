@@ -21,7 +21,7 @@ final class ArrayCache extends ConfigCache
      */
     protected function get(string $key): ?string
     {
-        return array_key_exists($key, self::$arrayCache) ? self::$arrayCache[$key] : null;
+        return self::$arrayCache[$key] ?? null;
     }
 
     /**

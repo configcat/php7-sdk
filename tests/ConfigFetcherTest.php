@@ -4,6 +4,7 @@ namespace ConfigCat\Tests;
 
 use ConfigCat\ClientOptions;
 use ConfigCat\ConfigFetcher;
+use ConfigCat\Tests\Helpers\Utils;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -49,8 +50,7 @@ class ConfigFetcherTest extends TestCase
     public function testFetchFailed()
     {
         $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [
-            ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
-                new Response(400), ])), ]);
+            ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([new Response(400)])), ]);
 
         $response = $fetcher->fetch('');
 
@@ -61,15 +61,16 @@ class ConfigFetcherTest extends TestCase
 
     public function testFetchInvalidJson()
     {
+        $mockHandler = new MockHandler([new Response(200, [], '{"key": value}')]);
         $fetcher = new ConfigFetcher($this->mockSdkKey, Utils::getTestLogger(), [
-            ClientOptions::CUSTOM_HANDLER => HandlerStack::create(new MockHandler([
-                new Response(200, [], '{"key": value}'), ])), ]);
+            ClientOptions::CUSTOM_HANDLER => HandlerStack::create($mockHandler), ]);
 
         $response = $fetcher->fetch('');
 
         $this->assertTrue($response->isFailed());
         $this->assertEmpty($response->getConfigEntry()->getEtag());
         $this->assertEmpty($response->getConfigEntry()->getConfig());
+        $this->assertNotEmpty($mockHandler->getLastRequest()->getHeader('X-ConfigCat-UserAgent'));
     }
 
     public function testConstructEmptySdkKey()

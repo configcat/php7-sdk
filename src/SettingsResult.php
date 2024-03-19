@@ -7,20 +7,24 @@ namespace ConfigCat;
 /**
  * @internal
  */
-class SettingsResult
+final class SettingsResult
 {
-    /** @var ?mixed[] */
+    /** @var array<string, mixed> */
     public $settings;
 
     /** @var float */
     public $fetchTime;
 
+    /** @var bool */
+    public $hasConfigJson;
+
     /**
-     * @param ?mixed[] $settings
+     * @param array<string, mixed> $settings
      */
-    public function __construct(?array $settings, float $fetchTime)
+    public function __construct(array $settings, float $fetchTime, bool $hasConfigJson)
     {
         $this->settings = $settings;
         $this->fetchTime = $fetchTime;
+        $this->hasConfigJson = $hasConfigJson;
     }
-}
+ }

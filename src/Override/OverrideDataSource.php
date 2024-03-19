@@ -18,9 +18,9 @@ abstract class OverrideDataSource implements LoggerAwareInterface
     /**
      * Gets the overrides.
      *
-     * @return ?mixed[] the overrides
+     * @return mixed[] the overrides
      */
-    abstract public function getOverrides(): ?array;
+    abstract public function getOverrides(): array;
 
     /**
      * Sets the logger.

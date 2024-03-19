@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace ConfigCat;
 
-use ConfigCat\Attributes\Config;
-use ConfigCat\Attributes\PercentageAttributes;
-use ConfigCat\Attributes\RolloutAttributes;
-use ConfigCat\Attributes\SettingAttributes;
 use ConfigCat\Cache\ArrayCache;
 use ConfigCat\Cache\ConfigCache;
 use ConfigCat\Cache\ConfigEntry;
+use ConfigCat\ConfigJson\Config;
+use ConfigCat\ConfigJson\PercentageOption;
+use ConfigCat\ConfigJson\Setting;
+use ConfigCat\ConfigJson\SettingType;
+use ConfigCat\ConfigJson\SettingValue;
+use ConfigCat\ConfigJson\SettingValueContainer;
+use ConfigCat\ConfigJson\TargetingRule;
 use ConfigCat\Log\DefaultLogger;
 use ConfigCat\Log\InternalLogger;
 use ConfigCat\Log\LogLevel;
@@ -19,6 +22,8 @@ use ConfigCat\Override\OverrideBehaviour;
 use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use stdClass;
+use Throwable;
 
 /**
  * A client for handling configurations provided by ConfigCat.
@@ -103,6 +108,18 @@ final class ConfigCatClient implements ClientInterface
             throw new InvalidArgumentException("'sdkKey' cannot be empty.");
         }
 
+        $overrides = (isset($options[ClientOptions::FLAG_OVERRIDES])
+            && $options[ClientOptions::FLAG_OVERRIDES] instanceof FlagOverrides)
+            ? $options[ClientOptions::FLAG_OVERRIDES]
+            : null;
+
+        if (is_null($overrides) || OverrideBehaviour::LOCAL_ONLY !== $overrides->getBehaviour()) {
+            $customBaseUrl = isset($options[ClientOptions::BASE_URL]) && !empty($options[ClientOptions::BASE_URL]);
+            if (!self::isValidSdkKey($sdkKey, $customBaseUrl)) {
+                throw new InvalidArgumentException("'sdkKey' is invalid.");
+            }
+        }
+
         $this->hooks = new Hooks();
         $this->cacheKey = sha1(sprintf('%s_'.ConfigFetcher::CONFIG_JSON_NAME.'_'.self::CONFIG_JSON_CACHE_VERSION, $sdkKey));
 
@@ -123,10 +140,7 @@ final class ConfigCatClient implements ClientInterface
 
         $this->logger = new InternalLogger($externalLogger, $logLevel, $exceptionsToIgnore, $this->hooks);
 
-        $this->overrides = (isset($options[ClientOptions::FLAG_OVERRIDES])
-            && $options[ClientOptions::FLAG_OVERRIDES] instanceof FlagOverrides)
-            ? $options[ClientOptions::FLAG_OVERRIDES]
-            : null;
+        $this->overrides = $overrides;
 
         $this->defaultUser = (isset($options[ClientOptions::DEFAULT_USER])
             && $options[ClientOptions::DEFAULT_USER] instanceof User)
@@ -182,11 +196,12 @@ final class ConfigCatClient implements ClientInterface
 
             return $this->evaluate(
                 $key,
-                $settingsResult->settings[$key] ?? [],
+                $settingsResult->settings,
+                $defaultValue,
                 $user,
                 $settingsResult->fetchTime
             )->getValue();
-        } catch (Exception $exception) {
+        } catch (Throwable $exception) {
             $message = "Error occurred in the `getValue` method while evaluating setting '".$key."'. ".
                 'Returning the `defaultValue` parameter that you specified '.
                 "in your application: '".Utils::getStringRepresentation($defaultValue)."'.";
@@ -198,7 +213,8 @@ final class ConfigCatClient implements ClientInterface
                 $key,
                 $defaultValue,
                 $user,
-                InternalLogger::format($message, $messageCtx)
+                InternalLogger::format($message, $messageCtx),
+                $exception
             ));
 
             return $defaultValue;
@@ -231,8 +247,8 @@ final class ConfigCatClient implements ClientInterface
                 return $details;
             }
 
-            return $this->evaluate($key, $settingsResult->settings[$key] ?? [], $user, $settingsResult->fetchTime);
-        } catch (Exception $exception) {
+            return $this->evaluate($key, $settingsResult->settings, $defaultValue, $user, $settingsResult->fetchTime);
+        } catch (Throwable $exception) {
             $message = "Error occurred in the `getValueDetails` method while evaluating setting '".$key."'. ".
                 'Returning the `defaultValue` parameter that you specified in '.
                 "your application: '".Utils::getStringRepresentation($defaultValue)."'.";
@@ -240,7 +256,7 @@ final class ConfigCatClient implements ClientInterface
                 'event_id' => 1002, 'exception' => $exception,
             ];
             $this->logger->error($message, $messageCtx);
-            $details = EvaluationDetails::fromError($key, $defaultValue, $user, InternalLogger::format($message, $messageCtx));
+            $details = EvaluationDetails::fromError($key, $defaultValue, $user, InternalLogger::format($message, $messageCtx), $exception);
             $this->hooks->fireOnFlagEvaluated($details);
 
             return $details;
@@ -262,10 +278,10 @@ final class ConfigCatClient implements ClientInterface
                 return null;
             }
 
-            return null === $settingsResult->settings
+            return empty($settingsResult->settings)
                 ? null
                 : $this->parseKeyAndValue($settingsResult->settings, $variationId);
-        } catch (Exception $exception) {
+        } catch (Throwable $exception) {
             $this->logger->error('Error occurred in the `getKeyAndValue` method. Returning null.', [
                 'event_id' => 1002, 'exception' => $exception,
             ]);
@@ -287,8 +303,8 @@ final class ConfigCatClient implements ClientInterface
                 return [];
             }
 
-            return null === $settingsResult->settings ? [] : array_keys($settingsResult->settings);
-        } catch (Exception $exception) {
+            return empty($settingsResult->settings) ? [] : array_keys($settingsResult->settings);
+        } catch (Throwable $exception) {
             $this->logger->error('Error occurred in the `getAllKeys` method. Returning empty array.', [
                 'event_id' => 1002, 'exception' => $exception,
             ]);
@@ -312,8 +328,8 @@ final class ConfigCatClient implements ClientInterface
                 return [];
             }
 
-            return null === $settingsResult->settings ? [] : $this->parseValues($settingsResult, $user);
-        } catch (Exception $exception) {
+            return empty($settingsResult->settings) ? [] : $this->parseValues($settingsResult, $user);
+        } catch (Throwable $exception) {
             $this->logger->error('Error occurred in the `getAllValues` method. Returning empty array.', [
                 'event_id' => 1002, 'exception' => $exception,
             ]);
@@ -337,19 +353,20 @@ final class ConfigCatClient implements ClientInterface
                 return [];
             }
 
-            $keys = array_keys($settingsResult->settings ?? []);
+            $keys = array_keys($settingsResult->settings);
             $result = [];
             foreach ($keys as $key) {
                 $result[$key] = $this->evaluate(
                     $key,
-                    $settingsResult->settings[$key] ?? [],
+                    $settingsResult->settings,
+                    null,
                     $user,
                     $settingsResult->fetchTime
                 );
             }
 
             return $result;
-        } catch (Exception $exception) {
+        } catch (Throwable $exception) {
             $this->logger->error('Error occurred in the `getAllValueDetails` method. Returning empty array.', [
                 'event_id' => 1002, 'exception' => $exception,
             ]);
@@ -363,30 +380,40 @@ final class ConfigCatClient implements ClientInterface
      */
     public function forceRefresh(): RefreshResult
     {
-        if (!is_null($this->overrides) && OverrideBehaviour::LOCAL_ONLY == $this->overrides->getBehaviour()) {
-            $message = 'Client is configured to use the `LOCAL_ONLY` override behavior, thus `forceRefresh()` has no effect.';
+        try {
+            if (null !== $this->overrides && OverrideBehaviour::LOCAL_ONLY == $this->overrides->getBehaviour()) {
+                $message = 'Client is configured to use the `LOCAL_ONLY` override behavior, thus `forceRefresh()` has no effect.';
+                $messageCtx = [
+                    'event_id' => 3202,
+                ];
+                $this->logger->warning($message, $messageCtx);
+
+                return new RefreshResult(InternalLogger::format($message, $messageCtx));
+            }
+
+            if ($this->offline) {
+                $message = 'Client is in offline mode, it cannot initiate HTTP calls.';
+                $messageCtx = [
+                    'event_id' => 3200,
+                ];
+                $this->logger->warning($message, $messageCtx);
+
+                return new RefreshResult(InternalLogger::format($message, $messageCtx));
+            }
+
+            $cacheEntry = $this->cache->load($this->cacheKey);
+            $response = $this->fetcher->fetch($cacheEntry->getEtag());
+            $this->handleResponse($response, $cacheEntry);
+
+            return new RefreshResult($response->getErrorMessage(), $response->getErrorException());
+        } catch (Throwable $exception) {
+            $message = 'Error occurred in the `forceRefresh` method.';
             $messageCtx = [
-                'event_id' => 3202,
+                'event_id' => 1003, 'exception' => $exception,
             ];
-            $this->logger->warning($message, $messageCtx);
 
-            return new RefreshResult(false, InternalLogger::format($message, $messageCtx));
+            return new RefreshResult(InternalLogger::format($message, $messageCtx), $exception);
         }
-
-        if ($this->offline) {
-            $message = 'Client is in offline mode, it cannot initiate HTTP calls.';
-            $this->logger->warning($message, [
-                'event_id' => 3200,
-            ]);
-
-            return new RefreshResult(false, $message);
-        }
-
-        $cacheEntry = $this->cache->load($this->cacheKey);
-        $response = $this->fetcher->fetch($cacheEntry->getEtag());
-        $this->handleResponse($response, $cacheEntry);
-
-        return new RefreshResult(!$response->isFailed(), $response->getError());
     }
 
     /**
@@ -441,7 +468,7 @@ final class ConfigCatClient implements ClientInterface
 
     private function checkSettingsAvailable(SettingsResult $settingsResult, string $defaultReturnValue): bool
     {
-        if (null === $settingsResult->settings) {
+        if (!$settingsResult->hasConfigJson) {
             $this->logger->error('Config JSON is not present. Returning '.$defaultReturnValue.'.', [
                 'event_id' => 1000,
             ]);
@@ -457,7 +484,7 @@ final class ConfigCatClient implements ClientInterface
      */
     private function checkSettingAvailable(SettingsResult $settingsResult, string $key, $defaultValue): ?string
     {
-        if (null === $settingsResult->settings) {
+        if (!$settingsResult->hasConfigJson) {
             $message = "Config JSON is not present when evaluating setting '".$key."'. ".
                 'Returning the `defaultValue` parameter that you specified in '.
                 "your application: '".Utils::getStringRepresentation($defaultValue)."'.";
@@ -490,12 +517,17 @@ final class ConfigCatClient implements ClientInterface
      */
     private function parseValues(SettingsResult $settingsResult, User $user = null): array
     {
-        $keys = array_keys($settingsResult->settings ?? []);
+        if (empty($settingsResult->settings)) {
+            return [];
+        }
+
+        $keys = array_keys($settingsResult->settings);
         $result = [];
         foreach ($keys as $key) {
             $result[$key] = $this->evaluate(
                 $key,
-                $settingsResult->settings[$key] ?? [],
+                $settingsResult->settings,
+                null,
                 $user,
                 $settingsResult->fetchTime
             )->getValue();
@@ -505,27 +537,26 @@ final class ConfigCatClient implements ClientInterface
     }
 
     /**
-     * @param mixed[] $setting
+     * @param array<string, mixed> $settings
+     * @param mixed $defaultValue
      */
-    private function evaluate(string $key, array $setting, ?User $user, float $fetchTime): EvaluationDetails
+    private function evaluate(string $key, array $settings, $defaultValue, ?User $user, float $fetchTime): EvaluationDetails
     {
-        $actualUser = is_null($user) ? $this->defaultUser : $user;
-        $collector = new EvaluationLogCollector();
-        $collector->add('Evaluating '.$key.'.');
-        $result = $this->evaluator->evaluate($key, $setting, $collector, $actualUser);
-        $this->logger->info((string) $collector, [
-            'event_id' => 5000,
-        ]);
+        $user = $user ?? $this->defaultUser;
+        $evaluateContext = new EvaluateContext($key, $settings[$key], $user, $settings);
+        $returnValue = $defaultValue;
+        $evaluateResult = $this->evaluator->evaluate($defaultValue, $evaluateContext, $returnValue);
         $details = new EvaluationDetails(
             $key,
-            $result->variationId,
-            $result->value,
-            $actualUser,
+            $evaluateResult->selectedValue[SettingValueContainer::VARIATION_ID] ?? null,
+            $returnValue,
+            $user,
             false,
             null,
+            null,
             $fetchTime,
-            $result->targetingRule,
-            $result->percentageRule
+            $evaluateResult->matchedTargetingRule,
+            $evaluateResult->matchedPercentageOption
         );
         $this->hooks->fireOnFlagEvaluated($details);
 
@@ -533,27 +564,39 @@ final class ConfigCatClient implements ClientInterface
     }
 
     /**
-     * @param array<string, mixed> $json
+     * @param array<string, mixed> $settings
      */
-    private function parseKeyAndValue(array $json, string $variationId): ?Pair
+    private function parseKeyAndValue(array $settings, string $variationId): ?Pair
     {
-        foreach ($json as $key => $value) {
-            if ($variationId == $value[SettingAttributes::VARIATION_ID]) {
-                return new Pair($key, $value[SettingAttributes::VALUE]);
+        foreach ($settings as $key => $setting) {
+            /** @var int|stdClass $settingType */
+            $settingType = Setting::getType(Setting::ensure($setting));
+
+            if ($variationId === ($setting[Setting::VARIATION_ID] ?? null)) {
+                return new Pair($key, SettingValue::get($setting[Setting::VALUE] ?? null, $settingType));
             }
 
-            $rolloutRules = $value[SettingAttributes::ROLLOUT_RULES];
-            $percentageItems = $value[SettingAttributes::ROLLOUT_PERCENTAGE_ITEMS];
-
-            foreach ($rolloutRules as $rolloutValue) {
-                if ($variationId == $rolloutValue[RolloutAttributes::VARIATION_ID]) {
-                    return new Pair($key, $rolloutValue[RolloutAttributes::VALUE]);
+            $targetingRules = TargetingRule::ensureList($setting[Setting::TARGETING_RULES] ?? []);
+            foreach ($targetingRules as $targetingRule) {
+                if (TargetingRule::hasPercentageOptions(TargetingRule::ensure($targetingRule))) {
+                    $percentageOptions = $targetingRule[TargetingRule::PERCENTAGE_OPTIONS];
+                    foreach ($percentageOptions as $percentageOption) {
+                        if ($variationId === ($percentageOption[PercentageOption::VARIATION_ID] ?? null)) {
+                            return new Pair($key, SettingValue::get($percentageOption[PercentageOption::VALUE] ?? null, $settingType));
+                        }
+                    }
+                } else {
+                    $simpleValue = $targetingRule[TargetingRule::SIMPLE_VALUE];
+                    if ($variationId === ($simpleValue[SettingValueContainer::VARIATION_ID] ?? null)) {
+                        return new Pair($key, SettingValue::get($simpleValue[SettingValueContainer::VALUE] ?? null, $settingType));
+                    }
                 }
             }
 
-            foreach ($percentageItems as $percentageValue) {
-                if ($variationId == $percentageValue[PercentageAttributes::VARIATION_ID]) {
-                    return new Pair($key, $percentageValue[PercentageAttributes::VALUE]);
+            $percentageOptions = PercentageOption::ensureList($setting[Setting::PERCENTAGE_OPTIONS] ?? []);
+            foreach ($percentageOptions as $percentageOption) {
+                if ($variationId === ($percentageOption[PercentageOption::VARIATION_ID] ?? null)) {
+                    return new Pair($key, SettingValue::get($percentageOption[PercentageOption::VALUE] ?? null, $settingType));
                 }
             }
         }
@@ -567,22 +610,22 @@ final class ConfigCatClient implements ClientInterface
 
     private function getSettingsResult(): SettingsResult
     {
-        if (!is_null($this->overrides)) {
+        if (null !== $this->overrides) {
             switch ($this->overrides->getBehaviour()) {
                 case OverrideBehaviour::LOCAL_ONLY:
-                    return new SettingsResult($this->overrides->getDataSource()->getOverrides(), 0);
+                    return new SettingsResult($this->overrides->getDataSource()->getOverrides(), 0, true);
 
                 case OverrideBehaviour::LOCAL_OVER_REMOTE:
-                    $local = $this->overrides->getDataSource()->getOverrides() ?? [];
+                    $local = $this->overrides->getDataSource()->getOverrides();
                     $remote = $this->getRemoteSettingsResult();
 
-                    return new SettingsResult(array_merge($remote->settings ?? [], $local), $remote->fetchTime);
+                    return new SettingsResult(array_merge($remote->settings, $local), $remote->fetchTime, true);
 
                 default: // remote over local
-                    $local = $this->overrides->getDataSource()->getOverrides() ?? [];
+                    $local = $this->overrides->getDataSource()->getOverrides();
                     $remote = $this->getRemoteSettingsResult();
 
-                    return new SettingsResult(array_merge($local, $remote->settings ?? []), $remote->fetchTime);
+                    return new SettingsResult(array_merge($local, $remote->settings), $remote->fetchTime, true);
             }
         }
 
@@ -598,16 +641,18 @@ final class ConfigCatClient implements ClientInterface
         }
 
         if (empty($cacheEntry->getConfig())) {
-            return new SettingsResult(null, 0);
+            return new SettingsResult([], 0, false);
         }
 
-        return new SettingsResult($cacheEntry->getConfig()[Config::ENTRIES], $cacheEntry->getFetchTime());
+        $settings = Setting::ensureMap($cacheEntry->getConfig()[Config::SETTINGS] ?? []);
+
+        return new SettingsResult($settings, $cacheEntry->getFetchTime(), true);
     }
 
     private function handleResponse(FetchResponse $response, ConfigEntry $cacheEntry): ConfigEntry
     {
         if ($response->isFetched()) {
-            $this->hooks->fireOnConfigChanged($response->getConfigEntry()->getConfig()[Config::ENTRIES]);
+            $this->hooks->fireOnConfigChanged($response->getConfigEntry()->getConfig()[Config::SETTINGS] ?? []);
             $this->cache->store($this->cacheKey, $response->getConfigEntry());
 
             return $response->getConfigEntry();
@@ -620,5 +665,24 @@ final class ConfigCatClient implements ClientInterface
         }
 
         return $cacheEntry;
+    }
+
+    private static function isValidSdkKey(string $sdkKey, bool $customBaseUrl): bool
+    {
+        $proxyPrefix = 'configcat-proxy/';
+        if ($customBaseUrl && strlen($sdkKey) > strlen($proxyPrefix) && str_starts_with($sdkKey, $proxyPrefix)) {
+            return true;
+        }
+
+        $components = explode('/', $sdkKey);
+        $keyLength = 22;
+
+        switch (count($components)) {
+            case 2: return strlen($components[0]) === $keyLength && strlen($components[1]) === $keyLength;
+
+            case 3: return 'configcat-sdk-1' === $components[0] && strlen($components[1]) === $keyLength && strlen($components[2]) === $keyLength;
+
+            default: return false;
+        }
     }
 }

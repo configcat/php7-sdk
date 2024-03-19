@@ -6,6 +6,4 @@ namespace ConfigCat;
 
 use Exception;
 
-class ConfigCatClientException extends Exception
-{
-}
+class ConfigCatClientException extends Exception {}
