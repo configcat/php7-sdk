@@ -16,13 +16,14 @@ abstract class TargetingRule
     public const PERCENTAGE_OPTIONS = 'p';
 
     /**
+     * @param mixed $targetingRules 
      * @return list<array<string, mixed>>
      *
      * @throws UnexpectedValueException
      *
      * @internal
      */
-    public static function ensureList(mixed $targetingRules): array
+    public static function ensureList($targetingRules): array
     {
         if (!is_array($targetingRules) || !array_is_list($targetingRules)) {
             throw new UnexpectedValueException('Targeting rule list is invalid.');
@@ -32,13 +33,14 @@ abstract class TargetingRule
     }
 
     /**
+     * @param mixed $targetingRule 
      * @return array<string, mixed>
      *
      * @throws UnexpectedValueException
      *
      * @internal
      */
-    public static function ensure(mixed $targetingRule): array
+    public static function ensure($targetingRule): array
     {
         if (!is_array($targetingRule)) {
             throw new UnexpectedValueException('Targeting rule is missing or invalid.');

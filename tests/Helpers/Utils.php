@@ -91,7 +91,7 @@ class Utils
         return $testDataWithDescription;
     }
 
-    public static function areCompatibleValues(mixed $value1, mixed $value2): bool
+    public static function areCompatibleValues($value1, $value2): bool
     {
         return is_bool($value1) && is_bool($value2)
             || is_string($value1) && is_string($value2)

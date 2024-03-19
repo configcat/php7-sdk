@@ -15,13 +15,14 @@ abstract class Segment
     public const CONDITIONS = 'r';
 
     /**
+     * @param mixed $segments 
      * @return list<array<string, mixed>>
      *
      * @throws UnexpectedValueException
      *
      * @internal
      */
-    public static function ensureList(mixed $segments): array
+    public static function ensureList($segments): array
     {
         if (!is_array($segments) || !array_is_list($segments)) {
             throw new UnexpectedValueException('Segment list is invalid.');
@@ -31,13 +32,14 @@ abstract class Segment
     }
 
     /**
+     * @param mixed $segment 
      * @return array<string, mixed>
      *
      * @throws UnexpectedValueException
      *
      * @internal
      */
-    public static function ensure(mixed $segment): array
+    public static function ensure($segment): array
     {
         if (!is_array($segment)) {
             throw new UnexpectedValueException('Segment is missing or invalid.');

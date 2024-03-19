@@ -53,7 +53,7 @@ class OverrideTest extends TestCase
     /**
      * @dataProvider provideOverrideValueTypeMismatchShouldBeHandledCorrectly_Dictionary
      */
-    public function testOverrideValueTypeMismatchShouldBeHandledCorrectlyDictionary(mixed $overrideValue, mixed $defaultValue, mixed $expectedReturnValue)
+    public function testOverrideValueTypeMismatchShouldBeHandledCorrectlyDictionary($overrideValue, $defaultValue, $expectedReturnValue)
     {
         $key = 'flag';
         $overrideArray = [$key => $overrideValue];
@@ -132,7 +132,7 @@ class OverrideTest extends TestCase
     /**
      * @dataProvider provideOverrideValueTypeMismatchShouldBeHandledCorrectly_SimplifiedConfig
      */
-    public function testOverrideValueTypeMismatchShouldBeHandledCorrectlySimplifiedConfig(string $overrideValueJson, mixed $defaultValue, mixed $expectedReturnValue)
+    public function testOverrideValueTypeMismatchShouldBeHandledCorrectlySimplifiedConfig(string $overrideValueJson, $defaultValue, $expectedReturnValue)
     {
         $tempFile = tmpfile();
 

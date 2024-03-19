@@ -57,7 +57,7 @@ class ConfigV2EvaluationTests extends TestCase
     /**
      * @dataProvider provideTestDataForComparisonAttributeConversionToCanonicalStringRepresentation
      */
-    public function testComparisonAttributeConversionToCanonicalStringRepresentation(string $key, mixed $customAttributeValue, string $expectedReturnValue)
+    public function testComparisonAttributeConversionToCanonicalStringRepresentation(string $key, $customAttributeValue, string $expectedReturnValue)
     {
         $clientOptions = [
             ClientOptions::FLAG_OVERRIDES => new FlagOverrides(
@@ -344,8 +344,8 @@ class ConfigV2EvaluationTests extends TestCase
         string $key,
         ?string $userId,
         string $customAttributeName,
-        mixed $customAttributeValue,
-        mixed $expectedReturnValue
+        $customAttributeValue,
+        $expectedReturnValue
     ) {
         $client = new ConfigCatClient($sdkKey);
 
@@ -435,7 +435,7 @@ class ConfigV2EvaluationTests extends TestCase
     /**
      * @dataProvider provideTestDataForPrerequisiteFlagComparisonValueTypeMismatch
      */
-    public function testPrerequisiteFlagComparisonValueTypeMismatch(string $key, string $prerequisiteFlagKey, mixed $prerequisiteFlagValue, mixed $expectedReturnValue)
+    public function testPrerequisiteFlagComparisonValueTypeMismatch(string $key, string $prerequisiteFlagKey, $prerequisiteFlagValue, $expectedReturnValue)
     {
         $overrideArray = [$prerequisiteFlagKey => $prerequisiteFlagValue];
 
@@ -498,7 +498,7 @@ class ConfigV2EvaluationTests extends TestCase
     /**
      * @dataProvider provideTestDataForPrerequisiteFlagOverride
      */
-    public function testPrerequisiteFlagOverride(string $key, string $userId, string $email, ?int $overrideBehaviour, mixed $expectedReturnValue)
+    public function testPrerequisiteFlagOverride(string $key, string $userId, string $email, ?int $overrideBehaviour, $expectedReturnValue)
     {
         $clientOptions = [
             // The flag override alters the definition of the following flags:
@@ -550,7 +550,7 @@ class ConfigV2EvaluationTests extends TestCase
     /**
      * @dataProvider provideTestDataForConfigSaltAndSegmentsOverride
      */
-    public function testConfigSaltAndSegmentsOverride(string $key, string $userId, string $email, ?int $overrideBehaviour, mixed $expectedReturnValue)
+    public function testConfigSaltAndSegmentsOverride(string $key, string $userId, string $email, ?int $overrideBehaviour, $expectedReturnValue)
     {
         $clientOptions = [
             // The flag override uses a different config json salt than the downloaded one and overrides the following segments:

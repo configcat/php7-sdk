@@ -207,8 +207,9 @@ final class EvaluateLogBuilder
 
     /**
      * @param array<string, mixed> $condition
+     * @param mixed $segments 
      */
-    public function appendSegmentCondition(array $condition, mixed $segments): self
+    public function appendSegmentCondition(array $condition, $segments): self
     {
         $segmentIndex = $condition[SegmentCondition::SEGMENT_INDEX] ?? null;
         $segment = $segments[is_int($segmentIndex) ? $segmentIndex : null] ?? null;
@@ -255,7 +256,10 @@ final class EvaluateLogBuilder
         return $this->decreaseIndent();
     }
 
-    public static function formatSettingValue(mixed $value): string
+    /**
+     * @param mixed $value 
+     */
+    public static function formatSettingValue($value): string
     {
         if (!isset($value)) {
             return self::INVALID_VALUE_PLACEHOLDER;
@@ -367,7 +371,10 @@ final class EvaluateLogBuilder
         return $this->append("User.{$comparisonAttribute} {$comparatorFormatted} '{$comparisonValue}'");
     }
 
-    private function appendUserConditionString(string $comparisonAttribute, ?int $comparator, mixed $comparisonValue, bool $isSensitive): self
+    /**
+     * @param mixed $comparisonValue 
+     */
+    private function appendUserConditionString(string $comparisonAttribute, ?int $comparator, $comparisonValue, bool $isSensitive): self
     {
         if (!is_string($comparisonValue)) {
             return $this->appendUserConditionCore($comparisonAttribute, $comparator, null);
@@ -376,7 +383,10 @@ final class EvaluateLogBuilder
         return $this->appendUserConditionCore($comparisonAttribute, $comparator, !$isSensitive ? $comparisonValue : '<hashed value>');
     }
 
-    private function appendUserConditionStringList(string $comparisonAttribute, ?int $comparator, mixed $comparisonValue, bool $isSensitive): self
+    /**
+     * @param mixed $comparisonValue 
+     */
+    private function appendUserConditionStringList(string $comparisonAttribute, ?int $comparator, $comparisonValue, bool $isSensitive): self
     {
         if (!Utils::isStringList($comparisonValue)) {
             return $this->appendUserConditionCore($comparisonAttribute, $comparator, null);
@@ -399,7 +409,10 @@ final class EvaluateLogBuilder
         return $this->append("User.{$comparisonAttribute} {$comparatorFormatted} [{$comparisonValueFormatted}]");
     }
 
-    private function appendUserConditionNumber(string $comparisonAttribute, ?int $comparator, mixed $comparisonValue, bool $isDateTime = false): self
+    /**
+     * @param mixed $comparisonValue 
+     */
+    private function appendUserConditionNumber(string $comparisonAttribute, ?int $comparator, $comparisonValue, bool $isDateTime = false): self
     {
         if (!(is_double($comparisonValue) || is_int($comparisonValue))) {
             return $this->appendUserConditionCore($comparisonAttribute, $comparator, null);

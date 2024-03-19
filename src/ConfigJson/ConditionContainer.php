@@ -16,13 +16,14 @@ abstract class ConditionContainer
     public const SEGMENT_CONDITION = 's';
 
     /**
+     * @param mixed $conditions 
      * @return list<array<string, mixed>>
      *
      * @throws UnexpectedValueException
      *
      * @internal
      */
-    public static function ensureList(mixed $conditions): array
+    public static function ensureList($conditions): array
     {
         if (!is_array($conditions) || !array_is_list($conditions)) {
             throw new UnexpectedValueException('Condition list is invalid.');
@@ -32,13 +33,14 @@ abstract class ConditionContainer
     }
 
     /**
+     * @param mixed $condition
      * @return array<string, mixed>
      *
      * @throws UnexpectedValueException
      *
      * @internal
      */
-    public static function ensure(mixed $condition): array
+    public static function ensure($condition): array
     {
         if (!is_array($condition)) {
             throw new UnexpectedValueException('Condition is missing or invalid.');

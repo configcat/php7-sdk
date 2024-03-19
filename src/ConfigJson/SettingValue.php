@@ -19,13 +19,14 @@ abstract class SettingValue
     public const DOUBLE = 'd';
 
     /**
+     * @param mixed $settingValue 
      * @param int|stdClass $settingType 
      * @return null|bool|float|int|string 
      * @throws UnexpectedValueException
      *
      * @internal
      */
-    public static function get(mixed $settingValue, $settingType, bool $throwIfInvalid = true)
+    public static function get($settingValue, $settingType, bool $throwIfInvalid = true)
     {
         if (SettingType::BOOLEAN === $settingType) {
             $value = $settingValue[self::BOOLEAN] ?? null;
@@ -70,9 +71,12 @@ abstract class SettingValue
     }
 
     /**
+     * @param mixed $settingValue 
+     * @return mixed 
+     *
      * @internal
      */
-    public static function infer(mixed $settingValue): mixed
+    public static function infer($settingValue)
     {
         $value = $settingValue[self::BOOLEAN] ?? null;
         if (isset($value)) {

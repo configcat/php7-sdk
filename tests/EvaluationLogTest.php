@@ -77,9 +77,9 @@ class EvaluationLogTest extends TestCase
         ?string $sdkKey,
         ?string $baseUrlOrOverrideFileName,
         string $key,
-        mixed $defaultValue,
+        $defaultValue,
         ?array $userObject,
-        mixed $expectedReturnValue,
+        $expectedReturnValue,
         string $expectedLogFileName
     ) {
         if (isset($userObject)) {

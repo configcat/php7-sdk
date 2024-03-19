@@ -161,7 +161,10 @@ abstract class Utils
         return $dateTime->format($timeOffset ? 'Y-m-d\\TH:i:s.vP' : 'Y-m-d\\TH:i:s.v\Z');
     }
 
-    public static function isStringList(mixed $value): bool
+    /**
+     * @param mixed $value 
+     */
+    public static function isStringList($value): bool
     {
         return is_array($value) && !self::array_some($value, function ($value, $key, $i) {
             return $key !== $i || !is_string($value);

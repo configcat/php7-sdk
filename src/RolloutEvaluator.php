@@ -79,7 +79,10 @@ final class EvaluateContext
         $this->isMissingUserObjectLogged = $this->isMissingUserObjectAttributeLogged = false;
     }
 
-    public static function forPrerequisiteFlag(string $key, mixed $setting, EvaluateContext $dependentFlagContext): EvaluateContext
+    /**
+     * @param mixed $setting 
+     */
+    public static function forPrerequisiteFlag(string $key, $setting, EvaluateContext $dependentFlagContext): EvaluateContext
     {
         $context = new EvaluateContext($key, $setting, $dependentFlagContext->user, $dependentFlagContext->settings);
         $context->visitedFlags = &$dependentFlagContext->getVisitedFlags(); // crucial to use `getVisitedFlags` here to make sure the list is created!
@@ -159,13 +162,14 @@ final class RolloutEvaluator
 
     /**
      * @param mixed           $defaultValue the value to return in case of failure
+     * @param mixed $returnValue 
      * @param EvaluateContext $context      the context object
      *
      * @return EvaluateResult the result of the evaluation
      *
      * @throws UnexpectedValueException
      */
-    public function evaluate(mixed $defaultValue, EvaluateContext $context, mixed &$returnValue): EvaluateResult
+    public function evaluate($defaultValue, EvaluateContext $context, &$returnValue): EvaluateResult
     {
         $logBuilder = $context->logBuilder;
 
@@ -666,14 +670,20 @@ final class RolloutEvaluator
         }
     }
 
-    private static function evaluateTextEquals(string $text, mixed $comparisonValue, bool $negate): bool
+    /**
+     * @param mixed $comparisonValue 
+     */
+    private static function evaluateTextEquals(string $text, $comparisonValue, bool $negate): bool
     {
         self::ensureStringComparisonValue($comparisonValue);
 
         return ($text === $comparisonValue) !== $negate;
     }
 
-    private static function evaluateSensitiveTextEquals(string $text, mixed $comparisonValue, string $configJsonSalt, string $contextSalt, bool $negate): bool
+    /**
+     * @param mixed $comparisonValue 
+     */
+    private static function evaluateSensitiveTextEquals(string $text, $comparisonValue, string $configJsonSalt, string $contextSalt, bool $negate): bool
     {
         self::ensureStringComparisonValue($comparisonValue);
 
@@ -682,7 +692,10 @@ final class RolloutEvaluator
         return ($hash === $comparisonValue) !== $negate;
     }
 
-    private static function evaluateTextIsOneOf(string $text, mixed $comparisonValues, bool $negate): bool
+    /**
+     * @param mixed $comparisonValues 
+     */
+    private static function evaluateTextIsOneOf(string $text, $comparisonValues, bool $negate): bool
     {
         self::ensureComparisonValues($comparisonValues);
 
@@ -695,7 +708,10 @@ final class RolloutEvaluator
         return $negate;
     }
 
-    private static function evaluateSensitiveTextIsOneOf(string $text, mixed $comparisonValues, string $configJsonSalt, string $contextSalt, bool $negate): bool
+    /**
+     * @param mixed $comparisonValues 
+     */
+    private static function evaluateSensitiveTextIsOneOf(string $text, $comparisonValues, string $configJsonSalt, string $contextSalt, bool $negate): bool
     {
         self::ensureComparisonValues($comparisonValues);
 
@@ -710,7 +726,10 @@ final class RolloutEvaluator
         return $negate;
     }
 
-    private static function evaluateTextSliceEqualsAnyOf(string $text, mixed $comparisonValues, bool $startsWith, bool $negate): bool
+    /**
+     * @param mixed $comparisonValues 
+     */
+    private static function evaluateTextSliceEqualsAnyOf(string $text, $comparisonValues, bool $startsWith, bool $negate): bool
     {
         self::ensureComparisonValues($comparisonValues);
 
@@ -727,7 +746,10 @@ final class RolloutEvaluator
         return $negate;
     }
 
-    private static function evaluateSensitiveTextSliceEqualsAnyOf(string $text, mixed $comparisonValues, string $configJsonSalt, string $contextSalt, bool $startsWith, bool $negate): bool
+    /**
+     * @param mixed $comparisonValues 
+     */
+    private static function evaluateSensitiveTextSliceEqualsAnyOf(string $text, $comparisonValues, string $configJsonSalt, string $contextSalt, bool $startsWith, bool $negate): bool
     {
         self::ensureComparisonValues($comparisonValues);
 
@@ -762,7 +784,10 @@ final class RolloutEvaluator
         return $negate;
     }
 
-    private static function evaluateTextContainsAnyOf(string $text, mixed $comparisonValues, bool $negate): bool
+    /**
+     * @param mixed $comparisonValues 
+     */
+    private static function evaluateTextContainsAnyOf(string $text, $comparisonValues, bool $negate): bool
     {
         self::ensureComparisonValues($comparisonValues);
 
@@ -775,7 +800,10 @@ final class RolloutEvaluator
         return $negate;
     }
 
-    private static function evaluateSemVerIsOneOf(Version $version, mixed $comparisonValues, bool $negate): bool
+    /**
+     * @param mixed $comparisonValues 
+     */
+    private static function evaluateSemVerIsOneOf(Version $version, $comparisonValues, bool $negate): bool
     {
         self::ensureComparisonValues($comparisonValues);
 
@@ -808,7 +836,10 @@ final class RolloutEvaluator
         return $result !== $negate;
     }
 
-    private static function evaluateSemVerRelation(Version $version, int $comparator, mixed $comparisonValue): bool
+    /**
+     * @param mixed $comparisonValue 
+     */
+    private static function evaluateSemVerRelation(Version $version, int $comparator, $comparisonValue): bool
     {
         self::ensureStringComparisonValue($comparisonValue);
 
@@ -833,7 +864,10 @@ final class RolloutEvaluator
         }
     }
 
-    private static function evaluateNumberRelation(float $number, int $comparator, mixed $comparisonValue): bool
+    /**
+     * @param mixed $comparisonValue 
+     */
+    private static function evaluateNumberRelation(float $number, int $comparator, $comparisonValue): bool
     {
         $number2 = self::ensureNumberComparisonValue($comparisonValue);
 
@@ -854,7 +888,10 @@ final class RolloutEvaluator
         }
     }
 
-    private static function evaluateDateTimeRelation(float $number, mixed $comparisonValue, bool $before): bool
+    /**
+     * @param mixed $comparisonValue 
+     */
+    private static function evaluateDateTimeRelation(float $number, $comparisonValue, bool $before): bool
     {
         $number2 = self::ensureNumberComparisonValue($comparisonValue);
 
@@ -863,8 +900,9 @@ final class RolloutEvaluator
 
     /**
      * @param list<string> $array
+     * @param mixed $comparisonValues 
      */
-    private static function evaluateArrayContainsAnyOf(array $array, mixed $comparisonValues, bool $negate): bool
+    private static function evaluateArrayContainsAnyOf(array $array, $comparisonValues, bool $negate): bool
     {
         self::ensureComparisonValues($comparisonValues);
 
@@ -881,8 +919,9 @@ final class RolloutEvaluator
 
     /**
      * @param list<string> $array
+     * @param mixed $comparisonValues 
      */
-    private static function evaluateSensitiveArrayContainsAnyOf(array $array, mixed $comparisonValues, string $configJsonSalt, string $contextSalt, bool $negate): bool
+    private static function evaluateSensitiveArrayContainsAnyOf(array $array, $comparisonValues, string $configJsonSalt, string $contextSalt, bool $negate): bool
     {
         self::ensureComparisonValues($comparisonValues);
 
@@ -1076,7 +1115,10 @@ final class RolloutEvaluator
         return $result;
     }
 
-    private static function ensureConfigJsonSalt(mixed $value): string
+    /**
+     * @param mixed $value 
+     */
+    private static function ensureConfigJsonSalt($value): string
     {
         if (!is_string($value)) {
             throw new UnexpectedValueException('Config JSON salt is missing or invalid.');
@@ -1085,9 +1127,10 @@ final class RolloutEvaluator
     }
 
     /**
+     * @param mixed $comparisonValues 
      * @return list<mixed>
      */
-    private static function ensureComparisonValues(mixed $comparisonValues): array
+    private static function ensureComparisonValues($comparisonValues): array
     {
         if (!array_is_list($comparisonValues)) {
             throw new UnexpectedValueException('Comparison value is missing or invalid.');
@@ -1096,7 +1139,10 @@ final class RolloutEvaluator
         return $comparisonValues;
     }
 
-    private static function ensureStringComparisonValue(mixed $comparisonValue): string
+    /**
+     * @param mixed $comparisonValue 
+     */
+    private static function ensureStringComparisonValue($comparisonValue): string
     {
         if (!is_string($comparisonValue)) {
             throw new UnexpectedValueException('Comparison value is missing or invalid.');
@@ -1105,7 +1151,10 @@ final class RolloutEvaluator
         return $comparisonValue;
     }
 
-    private static function ensureNumberComparisonValue(mixed $comparisonValue): float
+    /**
+     * @param mixed $comparisonValue 
+     */
+    private static function ensureNumberComparisonValue($comparisonValue): float
     {
         if (!(is_float($comparisonValue) || is_int($comparisonValue))) {
             throw new UnexpectedValueException('Comparison value is missing or invalid.');
@@ -1119,7 +1168,10 @@ final class RolloutEvaluator
         return hash('sha256', $value.$configJsonSalt.$contextSalt);
     }
 
-    private static function userAttributeValueToString(mixed $attributeValue): string
+    /**
+     * @param mixed $attributeValue 
+     */
+    private static function userAttributeValueToString($attributeValue): string
     {
         if (is_string($attributeValue)) {
             return $attributeValue;
@@ -1140,9 +1192,10 @@ final class RolloutEvaluator
     }
 
     /**
+     * @param mixed $attributeValue 
      * @param array<string, mixed> $condition
      */
-    private function getUserAttributeValueAsText(string $attributeName, mixed $attributeValue, array $condition, string $key): string
+    private function getUserAttributeValueAsText(string $attributeName, $attributeValue, array $condition, string $key): string
     {
         if (is_string($attributeValue)) {
             return $attributeValue;
@@ -1155,10 +1208,11 @@ final class RolloutEvaluator
     }
 
     /**
+     * @param mixed $attributeValue 
      * @param array<string, mixed> $condition
      * @return string|Version
      */
-    private function getUserAttributeValueAsSemVer(string $attributeName, mixed $attributeValue, array $condition, string $key)
+    private function getUserAttributeValueAsSemVer(string $attributeName, $attributeValue, array $condition, string $key)
     {
         if (is_string($attributeValue)) {
             $version = Version::parseOrNull(trim($attributeValue));
@@ -1173,10 +1227,11 @@ final class RolloutEvaluator
     }
 
     /**
+     * @param mixed $attributeValue 
      * @param array<string, mixed> $condition
      * @return float|string
      */
-    private function getUserAttributeValueAsNumber(string $attributeName, mixed $attributeValue, array $condition, string $key)
+    private function getUserAttributeValueAsNumber(string $attributeName, $attributeValue, array $condition, string $key)
     {
         if (is_double($attributeValue) || is_int($attributeValue)) {
             return (float) $attributeValue;
@@ -1194,10 +1249,11 @@ final class RolloutEvaluator
     }
 
     /**
+     * @param mixed $attributeValue 
      * @param array<string, mixed> $condition
      * @return float|string
      */
-    private function getUserAttributeValueAsUnixTimeSeconds(string $attributeName, mixed $attributeValue, array $condition, string $key)
+    private function getUserAttributeValueAsUnixTimeSeconds(string $attributeName, $attributeValue, array $condition, string $key)
     {
         if ($attributeValue instanceof DateTimeInterface) {
             $unixTimeSeconds = Utils::dateTimeToUnixTimeSeconds($attributeValue);
@@ -1219,11 +1275,12 @@ final class RolloutEvaluator
     }
 
     /**
+     * @param mixed $attributeValue 
      * @param array<string, mixed> $condition
      *
      * @return string|list<string>
      */
-    private function getUserAttributeValueAsStringArray(string $attributeName, mixed $attributeValue, array $condition, string $key)
+    private function getUserAttributeValueAsStringArray(string $attributeName, $attributeValue, array $condition, string $key)
     {
         if (is_array($attributeValue)) {
             if (Utils::isStringList($attributeValue)) {
@@ -1295,7 +1352,11 @@ final class RolloutEvaluator
         return sprintf(self::INVALID_USER_ATTRIBUTE_ERROR, $attributeName, $reason);
     }
 
-    private function checkDefaultValueTypeMismatch(mixed $returnValue, mixed $defaultValue, int $settingType): void
+    /**
+     * @param mixed $returnValue 
+     * @param mixed $defaultValue 
+     */
+    private function checkDefaultValueTypeMismatch($returnValue, $defaultValue, int $settingType): void
     {
         if (!isset($defaultValue)) { // when default value is null, the type of return value can be of any allowed type
             return;

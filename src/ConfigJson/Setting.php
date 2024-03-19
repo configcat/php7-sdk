@@ -28,13 +28,14 @@ abstract class Setting extends SettingValueContainer
     public const CONFIG_SEGMENTS = '__configSegments';
 
     /**
+     * @param mixed $settings 
      * @return array<string, mixed>
      *
      * @throws UnexpectedValueException
      *
      * @internal
      */
-    public static function ensureMap(mixed $settings): array
+    public static function ensureMap($settings): array
     {
         if (!is_array($settings)) {
             throw new UnexpectedValueException('Setting map is invalid.');
@@ -44,13 +45,14 @@ abstract class Setting extends SettingValueContainer
     }
 
     /**
+     * @param mixed $setting 
      * @return array<string, mixed>
      *
      * @throws UnexpectedValueException
      *
      * @internal
      */
-    public static function ensure(mixed $setting): array
+    public static function ensure($setting): array
     {
         if (!is_array($setting)) {
             throw new UnexpectedValueException('Setting is missing or invalid.');
@@ -85,11 +87,12 @@ abstract class Setting extends SettingValueContainer
     }
 
     /**
+     * @param mixed $value 
      * @return array<string, mixed>
      *
      * @internal
      */
-    public static function fromValue(mixed $value): array
+    public static function fromValue($value): array
     {
         if (is_bool($value)) {
             $settingType = SettingType::BOOLEAN;
