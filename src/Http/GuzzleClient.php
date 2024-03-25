@@ -8,7 +8,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Bridge class for PHP 7.1
+ * Bridge class for PHP 7.1.
  */
 class GuzzleClient extends Client implements ClientInterface
 {

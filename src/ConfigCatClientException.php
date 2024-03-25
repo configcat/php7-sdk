@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace ConfigCat;
 
-class ConfigCatClientException extends \Exception
-{
+use Exception;
 
+class ConfigCatClientException extends Exception
+{
 }

@@ -4,28 +4,45 @@ declare(strict_types=1);
 
 namespace ConfigCat;
 
+use Throwable;
+
 class EvaluationDetails
 {
     /** @var string */
     private $key;
-    /** @var string|null */
+
+    /** @var ?string */
     private $variationId;
+
     /** @var mixed */
     private $value;
-    /** @var User|null */
+
+    /** @var ?User */
     private $user;
+
     /** @var bool */
     private $isDefaultValue;
-    /** @var string */
-    private $error;
+
+    /** @var ?string */
+    private $errorMessage;
+
+    /** @var ?Throwable */
+    private $errorException;
+
     /** @var float */
     private $fetchTimeUnixMilliseconds;
-    /** @var array|null */
-    private $matchedEvaluationRule;
-    /** @var array|null */
-    private $matchedEvaluationPercentageRule;
+
+    /** @var ?array<string, mixed> */
+    private $matchedTargetingRule;
+
+    /** @var ?array<string, mixed> */
+    private $matchedPercentageOption;
 
     /**
+     * @param mixed                 $value
+     * @param ?array<string, mixed> $matchedTargetingRule
+     * @param ?array<string, mixed> $matchedPercentageOption
+     *
      * @internal
      */
     public function __construct(
@@ -34,26 +51,30 @@ class EvaluationDetails
         $value,
         ?User $user,
         bool $isDefaultValue,
-        ?string $error,
+        ?string $errorMessage,
+        ?Throwable $errorException,
         float $fetchTimeUnixMilliseconds,
-        ?array $matchedEvaluationRule,
-        ?array $matchedEvaluationPercentageRule
+        ?array $matchedTargetingRule,
+        ?array $matchedPercentageOption
     ) {
         $this->key = $key;
         $this->variationId = $variationId;
         $this->value = $value;
         $this->user = $user;
         $this->isDefaultValue = $isDefaultValue;
-        $this->error = $error;
+        $this->errorMessage = $errorMessage;
+        $this->errorException = $errorException;
         $this->fetchTimeUnixMilliseconds = $fetchTimeUnixMilliseconds;
-        $this->matchedEvaluationRule = $matchedEvaluationRule;
-        $this->matchedEvaluationPercentageRule = $matchedEvaluationPercentageRule;
+        $this->matchedTargetingRule = $matchedTargetingRule;
+        $this->matchedPercentageOption = $matchedPercentageOption;
     }
 
     /**
+     * @param mixed $value
+     *
      * @internal
      */
-    public static function fromError(string $key, $value, ?User $user, string $error): EvaluationDetails
+    public static function fromError(string $key, $value, ?User $user, string $errorMessage, ?Throwable $errorException = null): EvaluationDetails
     {
         return new EvaluationDetails(
             $key,
@@ -61,7 +82,8 @@ class EvaluationDetails
             $value,
             $user,
             true,
-            $error,
+            $errorMessage,
+            $errorException,
             0,
             null,
             null
@@ -69,7 +91,7 @@ class EvaluationDetails
     }
 
     /**
-     * @return string the key of the evaluated feature flag or setting.
+     * @return string the key of the evaluated feature flag or setting
      */
     public function getKey(): string
     {
@@ -77,7 +99,7 @@ class EvaluationDetails
     }
 
     /**
-     * @return string the variation ID (analytics)
+     * @return ?string the variation ID (analytics)
      */
     public function getVariationId(): ?string
     {
@@ -85,7 +107,7 @@ class EvaluationDetails
     }
 
     /**
-     * @return mixed the evaluated value of the feature flag or setting.
+     * @return mixed the evaluated value of the feature flag or setting
      */
     public function getValue()
     {
@@ -93,7 +115,7 @@ class EvaluationDetails
     }
 
     /**
-     * @return User the user object that was used for evaluation.
+     * @return ?User the user object that was used for evaluation
      */
     public function getUser(): ?User
     {
@@ -101,7 +123,7 @@ class EvaluationDetails
     }
 
     /**
-     * @return bool true when the default value passed to getValueDetails() is returned due to an error.
+     * @return bool true when the default value passed to getValueDetails() is returned due to an error
      */
     public function isDefaultValue(): bool
     {
@@ -109,15 +131,23 @@ class EvaluationDetails
     }
 
     /**
-     * @return string in case of an error, the error message.
+     * @return ?string error message in case evaluation failed
      */
-    public function getError(): ?string
+    public function getErrorMessage(): ?string
     {
-        return $this->error;
+        return $this->errorMessage;
     }
 
     /**
-     * @return float the last download time of the current config in unix milliseconds format.
+     * @return ?Throwable the `Throwable` object related to the error in case evaluation failed (if any)
+     */
+    public function getErrorException(): ?Throwable
+    {
+        return $this->errorException;
+    }
+
+    /**
+     * @return float the last download time of the current config in unix milliseconds format
      */
     public function getFetchTimeUnixMilliseconds(): float
     {
@@ -125,18 +155,18 @@ class EvaluationDetails
     }
 
     /**
-     * @return array the targeting rule the evaluation was based on.
+     * @return ?array<string, mixed> the targeting rule (if any) that matched during the evaluation and was used to return the evaluated value
      */
-    public function getMatchedEvaluationRule(): ?array
+    public function getMatchedTargetingRule(): ?array
     {
-        return $this->matchedEvaluationRule;
+        return $this->matchedTargetingRule;
     }
 
     /**
-     * @return array the percentage rule the evaluation was based on.
+     * @return ?array<string, mixed> the percentage option (if any) that was used to select the evaluated value
      */
-    public function getMatchedEvaluationPercentageRule(): ?array
+    public function getMatchedPercentageOption(): ?array
     {
-        return $this->matchedEvaluationPercentageRule;
+        return $this->matchedPercentageOption;
     }
 }

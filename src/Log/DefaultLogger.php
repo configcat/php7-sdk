@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ConfigCat\Log;
 
+use ConfigCat\Utils;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 
@@ -54,24 +55,32 @@ class DefaultLogger implements LoggerInterface
         // Do nothing, only the leveled methods should be used.
     }
 
+    /**
+     * @param mixed[] $context
+     */
     private static function logMsg(int $level, string $message, array $context = []): void
     {
         $date = new DateTimeImmutable();
         $context['timestamp'] = $date->format('Y-m-d\\TH:i:sP');
         $context['level'] = LogLevel::asString($level);
 
-        $final = '[{timestamp}] ConfigCat.{level}: '.$message;
+        $final = self::interpolate('[{timestamp}] ConfigCat.{level}: [{event_id}] '.$message, $context);
 
-        error_log(self::interpolate($final, $context));
+        if (isset($context['exception'])) {
+            $final .= PHP_EOL.$context['exception'];
+        }
+
+        error_log($final);
     }
 
+    /**
+     * @param mixed[] $context
+     */
     private static function interpolate(string $message, array $context = []): string
     {
         $replace = [];
         foreach ($context as $key => $val) {
-            if (!is_array($val) && (!is_object($val) || method_exists($val, '__toString'))) {
-                $replace['{'.$key.'}'] = $val;
-            }
+            $replace['{'.$key.'}'] = Utils::getStringRepresentation($val);
         }
 
         return strtr($message, $replace);

@@ -1,0 +1,22 @@
+parameters:
+    phpVersion: 70100 # PHP 7.1
+    level: 8
+    paths:
+        - src
+    ignoreErrors:   
+    		-
+    			message: '#PHPDoc tag \@throws with type Psr\\SimpleCache\\InvalidArgumentException is not subtype of Throwable#'
+    			path: src/Cache/LaravelCache.php
+    			count: 1
+    		-
+    			message: '#PHPDoc tag \@throws with type Psr\\SimpleCache\\InvalidArgumentException is not subtype of Throwable#'
+    			path: src/Cache/Psr16Cache.php
+    			count: 2
+    		-
+    			message: '#PHPDoc tag \@throws with type Psr\\Cache\\InvalidArgumentException is not subtype of Throwable#'
+    			path: src/Cache/Psr6Cache.php
+    			count: 2
+    		-
+    			message: '#Class ConfigCat\\Http\\GuzzleClient extends @final class GuzzleHttp\\Client.#'
+    			path: src/Http/GuzzleClient.php
+    			count: 1

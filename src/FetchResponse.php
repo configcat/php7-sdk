@@ -5,104 +5,117 @@ declare(strict_types=1);
 namespace ConfigCat;
 
 use ConfigCat\Cache\ConfigEntry;
+use Throwable;
 
 /**
  * Represents a fetch response, including its state and body.
- * @package ConfigCat
+ *
  * @internal
  */
 final class FetchResponse
 {
     /** @var int */
-    const FETCHED = 0;
+    public const FETCHED = 0;
+
     /** @var int */
-    const NOT_MODIFIED = 1;
+    public const NOT_MODIFIED = 1;
+
     /** @var int */
-    const FAILED = 3;
+    public const FAILED = 3;
 
     /** @var int */
     private $status;
+
     /** @var ConfigEntry */
     private $cacheEntry;
-    /** @var string|null */
-    private $error;
+
+    /** @var ?string */
+    private $errorMessage;
+
+    /** @var ?Throwable */
+    private $errorException;
 
     private function __construct(
         int $status,
         ConfigEntry $cacheEntry,
-        ?string $error = null
+        ?string $errorMessage = null,
+        ?Throwable $errorException = null
     ) {
         $this->status = $status;
         $this->cacheEntry = $cacheEntry;
-        $this->error = $error;
+        $this->errorMessage = $errorMessage;
+        $this->errorException = $errorException;
     }
 
     /**
      * Creates a new response with FAILED status.
      *
-     * @param string $error the reason of the failure.
-     * @return FetchResponse the response.
+     * @param string     $errorMessage   the reason of the failure
+     * @param ?Throwable $errorException the related error exception (if any)
+     *
+     * @return FetchResponse the response
      */
-    public static function failure(string $error): FetchResponse
+    public static function failure(string $errorMessage, ?Throwable $errorException = null): FetchResponse
     {
-        return new FetchResponse(self::FAILED, ConfigEntry::empty(), $error);
+        return new FetchResponse(self::FAILED, ConfigEntry::empty(), $errorMessage, $errorException);
     }
 
     /**
      * Creates a new response with NOT_MODIFIED status.
      *
-     * @return FetchResponse the response.
+     * @return FetchResponse the response
      */
     public static function notModified(): FetchResponse
     {
-        return new FetchResponse(self::NOT_MODIFIED, ConfigEntry::empty(), null);
+        return new FetchResponse(self::NOT_MODIFIED, ConfigEntry::empty());
     }
 
     /**
      * Creates a new response with FETCHED status.
      *
-     * @param ConfigEntry $entry the produced config entry.
-     * @return FetchResponse the response.
+     * @param ConfigEntry $entry the produced config entry
+     *
+     * @return FetchResponse the response
      */
     public static function success(ConfigEntry $entry): FetchResponse
     {
-        return new FetchResponse(self::FETCHED, $entry, null);
+        return new FetchResponse(self::FETCHED, $entry);
     }
 
     /**
      * Returns true when the response is in fetched state.
      *
-     * @return bool True if the fetch succeeded, otherwise false.
+     * @return bool true if the fetch succeeded, otherwise false
      */
     public function isFetched(): bool
     {
-        return $this->status === self::FETCHED;
+        return self::FETCHED === $this->status;
     }
 
     /**
      * Returns true when the response is in not modified state.
      *
-     * @return bool True if the fetched configurations was not modified, otherwise false.
+     * @return bool true if the fetched configurations was not modified, otherwise false
      */
     public function isNotModified(): bool
     {
-        return $this->status === self::NOT_MODIFIED;
+        return self::NOT_MODIFIED === $this->status;
     }
 
     /**
      * Returns true when the response is in failed state.
      *
-     * @return bool True if the fetch failed, otherwise false.
+     * @return bool true if the fetch failed, otherwise false
      */
     public function isFailed(): bool
     {
-        return $this->status === self::FAILED;
+        return self::FAILED === $this->status;
     }
 
     /**
      * Returns the produced config entry.
      *
-     * @return ConfigEntry The produced config entry.
+     * @return ConfigEntry the produced config entry
      */
     public function getConfigEntry(): ConfigEntry
     {
@@ -110,12 +123,22 @@ final class FetchResponse
     }
 
     /**
-     * Returns the error if the fetch failed.
+     * Returns the error message if the fetch failed.
      *
-     * @return string|null The error.
+     * @return ?string the error message
      */
-    public function getError(): ?string
+    public function getErrorMessage(): ?string
     {
-        return $this->error;
+        return $this->errorMessage;
+    }
+
+    /**
+     * Returns the `Throwable` object related to the error in case of failure (if any).
+     *
+     * @return ?Throwable the error exception
+     */
+    public function getErrorException(): ?Throwable
+    {
+        return $this->errorException;
     }
 }
