@@ -7,13 +7,17 @@ namespace ConfigCat\ConfigJson;
 /**
  * Segment comparison operator used during the evaluation process.
  */
-abstract class SegmentComparator
+final class SegmentComparator
 {
     /** IS IN SEGMENT - Checks whether the conditions of the specified segment are evaluated to true. */
     public const IS_IN = 0;
 
     /** IS NOT IN SEGMENT - Checks whether the conditions of the specified segment are evaluated to false. */
     public const IS_NOT_IN = 1;
+
+    private function __construct()
+    {
+    }
 
     /**
      * @internal

@@ -7,7 +7,7 @@ namespace ConfigCat\ConfigJson;
 /**
  * Setting type.
  */
-abstract class SettingType
+final class SettingType
 {
     /** On/off type (feature flag). */
     public const BOOLEAN = 0;
@@ -20,6 +20,10 @@ abstract class SettingType
 
     /** Decimal number type. */
     public const DOUBLE = 3;
+
+    private function __construct()
+    {
+    }
 
     /**
      * @internal

@@ -9,11 +9,15 @@ use UnexpectedValueException;
 /**
  * Redirect mode.
  */
-abstract class RedirectMode
+final class RedirectMode
 {
     public const NO = 0;
     public const SHOULD = 1;
     public const FORCE = 2;
+
+    private function __construct()
+    {
+    }
 
     /**
      * @internal

@@ -7,7 +7,7 @@ namespace ConfigCat\ConfigJson;
 /**
  * User Object attribute comparison operator used during the evaluation process.
  */
-abstract class UserComparator
+final class UserComparator
 {
     /** IS ONE OF (cleartext) - Checks whether the comparison attribute is equal to any of the comparison values. */
     public const TEXT_IS_ONE_OF = 0;
@@ -116,6 +116,10 @@ abstract class UserComparator
 
     /** ARRAY NOT CONTAINS ANY OF (cleartext) - Checks whether the comparison attribute interpreted as a comma-separated list does not contain any of the comparison values. */
     public const ARRAY_NOT_CONTAINS_ANY_OF = 35;
+
+    private function __construct()
+    {
+    }
 
     /**
      * @internal

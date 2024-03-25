@@ -9,10 +9,14 @@ use UnexpectedValueException;
 /**
  * Represents the JSON keys of a segment.
  */
-abstract class Segment
+final class Segment
 {
     public const NAME = 'n';
     public const CONDITIONS = 'r';
+
+    private function __construct()
+    {
+    }
 
     /**
      * @param mixed $segments

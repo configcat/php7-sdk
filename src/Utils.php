@@ -17,8 +17,12 @@ if (!defined('PHP_FLOAT_EPSILON')) {
  *
  * @internal
  */
-abstract class Utils
+final class Utils
 {
+    private function __construct()
+    {
+    }
+
     /**
      * Returns the string representation of a value.
      *
