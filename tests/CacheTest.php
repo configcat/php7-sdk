@@ -139,10 +139,10 @@ class CacheTest extends TestCase
 
 class TestCache extends ConfigCache
 {
-    /** @var bool|null  */
+    /** @var bool|null */
     private $throwException;
 
-    /** @var string|null  */
+    /** @var string|null */
     private $defaultValue;
 
     public function __construct($throwException = false, $defaultValue = null)
