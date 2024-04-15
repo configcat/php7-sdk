@@ -14,6 +14,9 @@ use Throwable;
  */
 abstract class ConfigCache implements LoggerAwareInterface
 {
+    /** @var array<string, ConfigEntry> */
+    private static $inMemoryCache = [];
+
     /** @var LoggerInterface */
     private $logger;
 
@@ -33,6 +36,7 @@ abstract class ConfigCache implements LoggerAwareInterface
         }
 
         try {
+            self::$inMemoryCache[$key] = $value;
             $this->set($key, $value->serialize());
         } catch (Throwable $exception) {
             $this->logger->error('Error occurred while writing the cache.', [
@@ -60,17 +64,20 @@ abstract class ConfigCache implements LoggerAwareInterface
         try {
             $cached = $this->get($key);
             if (empty($cached)) {
-                return ConfigEntry::empty();
+                return self::readFromMemory($key);
             }
 
-            return ConfigEntry::fromCached($cached);
+            $fromCache = ConfigEntry::fromCached($cached);
+            self::$inMemoryCache[$key] = $fromCache;
+
+            return $fromCache;
         } catch (Throwable $exception) {
             $this->logger->error('Error occurred while reading the cache.', [
                 'event_id' => 2200, 'exception' => $exception,
             ]);
         }
 
-        return ConfigEntry::empty();
+        return self::readFromMemory($key);
     }
 
     /**
@@ -97,4 +104,9 @@ abstract class ConfigCache implements LoggerAwareInterface
      * @param string $value the value to cache
      */
     abstract protected function set(string $key, string $value): void;
+
+    private function readFromMemory(string $key): ConfigEntry
+    {
+        return self::$inMemoryCache[$key] ?? ConfigEntry::empty();
+    }
 }

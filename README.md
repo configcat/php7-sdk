@@ -8,10 +8,10 @@ ConfigCat is a feature flag and configuration management service that lets you s
 ConfigCat is a <a href="https://configcat.com" target="_blank">hosted feature flag service</a>. Manage feature toggles across frontend, backend, mobile, desktop apps. <a href="https://configcat.com" target="_blank">Alternative to LaunchDarkly</a>. Management app + feature flag SDKs.
 
 [![Build Status](https://github.com/configcat/php7-sdk/actions/workflows/php-ci.yml/badge.svg?branch=main)](https://github.com/configcat/php7-sdk/actions/workflows/php-ci.yml)
-[![Coverage Status](https://img.shields.io/codecov/c/github/ConfigCat/php7-sdk.svg)](https://codecov.io/gh/ConfigCat/php7-sdk)
 [![Latest Stable Version](https://poser.pugx.org/configcat/configcat-client-php7/version)](https://packagist.org/packages/configcat/configcat-client-php7)
 [![Total Downloads](https://poser.pugx.org/configcat/configcat-client-php7/downloads)](https://packagist.org/packages/configcat/configcat-client-php7)
-[![Latest Unstable Version](https://poser.pugx.org/configcat/configcat-client-php7/v/unstable)](https://packagist.org/packages/configcat/configcat-client-php7)
+[![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/configcat_php7-sdk?logo=sonarcloud&server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/project/overview?id=configcat_php7-sdk)
+[![Sonar Coverage](https://img.shields.io/sonar/coverage/configcat_php7-sdk?logo=SonarCloud&server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/project/overview?id=configcat_php7-sdk)
 
 ## Requirements
 - PHP >= 7.1
