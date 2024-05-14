@@ -24,6 +24,60 @@ final class Utils
     }
 
     /**
+     * Polyfill for the `str_starts_with` function introduced in PHP 8.0.
+     */
+    public static function str_starts_with(string $haystack, string $needle): bool
+    {
+        // Source: https://github.com/symfony/polyfill/blob/v1.29.0/src/Php80/Php80.php#L96
+
+        return 0 === strncmp($haystack, $needle, \strlen($needle));
+    }
+
+    /**
+     * Polyfill for the `str_ends_with` function introduced in PHP 8.0.
+     */
+    public static function str_ends_with(string $haystack, string $needle): bool
+    {
+        // Source: https://github.com/symfony/polyfill/blob/v1.29.0/src/Php80/Php80.php#L101
+
+        if ('' === $needle || $needle === $haystack) {
+            return true;
+        }
+
+        if ('' === $haystack) {
+            return false;
+        }
+
+        $needleLength = \strlen($needle);
+
+        return $needleLength <= \strlen($haystack) && 0 === substr_compare($haystack, $needle, -$needleLength);
+    }
+
+    /**
+     * Polyfill for the `array_is_list` function introduced in PHP 8.1.
+     *
+     * @param array<mixed> $array
+     */
+    public static function array_is_list(array $array): bool
+    {
+        // Source: https://github.com/symfony/polyfill/blob/v1.29.0/src/Php81/Php81.php#L21
+
+        if ([] === $array || $array === array_values($array)) {
+            return true;
+        }
+
+        $nextKey = -1;
+
+        foreach ($array as $k => $v) {
+            if ($k !== ++$nextKey) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Returns the string representation of a value.
      *
      * @param mixed $value the value

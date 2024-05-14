@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ConfigCat\ConfigJson;
 
+use ConfigCat\Utils;
 use UnexpectedValueException;
 
 /**
@@ -30,7 +31,7 @@ final class TargetingRule
      */
     public static function ensureList($targetingRules): array
     {
-        if (!is_array($targetingRules) || !array_is_list($targetingRules)) {
+        if (!is_array($targetingRules) || !Utils::array_is_list($targetingRules)) {
             throw new UnexpectedValueException('Targeting rule list is invalid.');
         }
 
@@ -71,7 +72,7 @@ final class TargetingRule
             if (!isset($percentageOptions) && is_array($simpleValue)) {
                 return false;
             }
-        } elseif (is_array($percentageOptions) && array_is_list($percentageOptions) && count($percentageOptions) > 0) {
+        } elseif (is_array($percentageOptions) && Utils::array_is_list($percentageOptions) && count($percentageOptions) > 0) {
             return true;
         }
 

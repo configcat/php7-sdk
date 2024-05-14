@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ConfigCat\ConfigJson;
 
+use ConfigCat\Utils;
 use UnexpectedValueException;
 
 /**
@@ -30,7 +31,7 @@ final class ConditionContainer
      */
     public static function ensureList($conditions): array
     {
-        if (!is_array($conditions) || !array_is_list($conditions)) {
+        if (!is_array($conditions) || !Utils::array_is_list($conditions)) {
             throw new UnexpectedValueException('Condition list is invalid.');
         }
 

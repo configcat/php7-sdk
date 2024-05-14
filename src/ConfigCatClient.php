@@ -18,7 +18,6 @@ use ConfigCat\Log\InternalLogger;
 use ConfigCat\Log\LogLevel;
 use ConfigCat\Override\FlagOverrides;
 use ConfigCat\Override\OverrideBehaviour;
-use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use stdClass;
@@ -669,7 +668,7 @@ final class ConfigCatClient implements ClientInterface
     private static function isValidSdkKey(string $sdkKey, bool $customBaseUrl): bool
     {
         $proxyPrefix = 'configcat-proxy/';
-        if ($customBaseUrl && strlen($sdkKey) > strlen($proxyPrefix) && str_starts_with($sdkKey, $proxyPrefix)) {
+        if ($customBaseUrl && strlen($sdkKey) > strlen($proxyPrefix) && Utils::str_starts_with($sdkKey, $proxyPrefix)) {
             return true;
         }
 

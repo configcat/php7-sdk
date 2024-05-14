@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ConfigCat\ConfigJson;
 
+use ConfigCat\Utils;
 use UnexpectedValueException;
 
 /**
@@ -28,7 +29,7 @@ final class PercentageOption extends SettingValueContainer
      */
     public static function ensureList($percentageOptions): array
     {
-        if (!is_array($percentageOptions) || !array_is_list($percentageOptions)) {
+        if (!is_array($percentageOptions) || !Utils::array_is_list($percentageOptions)) {
             throw new UnexpectedValueException('Percentage option list is invalid.');
         }
 
