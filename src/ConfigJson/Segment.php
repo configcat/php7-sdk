@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ConfigCat\ConfigJson;
 
+use ConfigCat\Utils;
 use UnexpectedValueException;
 
 /**
@@ -29,7 +30,7 @@ final class Segment
      */
     public static function ensureList($segments): array
     {
-        if (!is_array($segments) || !array_is_list($segments)) {
+        if (!is_array($segments) || !Utils::array_is_list($segments)) {
             throw new UnexpectedValueException('Segment list is invalid.');
         }
 

@@ -18,7 +18,6 @@ use ConfigCat\Log\InternalLogger;
 use ConfigCat\Log\LogLevel;
 use ConfigCat\Override\FlagOverrides;
 use ConfigCat\Override\OverrideBehaviour;
-use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use stdClass;
@@ -29,7 +28,7 @@ use Throwable;
  */
 final class ConfigCatClient implements ClientInterface
 {
-    public const SDK_VERSION = '3.0.1';
+    public const SDK_VERSION = '3.0.2';
     private const CONFIG_JSON_CACHE_VERSION = 'v2';
 
     /** @var InternalLogger */
@@ -669,7 +668,7 @@ final class ConfigCatClient implements ClientInterface
     private static function isValidSdkKey(string $sdkKey, bool $customBaseUrl): bool
     {
         $proxyPrefix = 'configcat-proxy/';
-        if ($customBaseUrl && strlen($sdkKey) > strlen($proxyPrefix) && str_starts_with($sdkKey, $proxyPrefix)) {
+        if ($customBaseUrl && strlen($sdkKey) > strlen($proxyPrefix) && Utils::str_starts_with($sdkKey, $proxyPrefix)) {
             return true;
         }
 

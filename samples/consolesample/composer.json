@@ -1,6 +1,6 @@
 {
     "require": {
-        "configcat/configcat-client-php7": "^1",
+        "configcat/configcat-client-php7": "^3",
         "monolog/monolog": "^1.0"
     }
 }

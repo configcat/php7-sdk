@@ -761,7 +761,7 @@ final class RolloutEvaluator
         foreach ($comparisonValues as $comparisonValue) {
             $item = self::ensureStringComparisonValue($comparisonValue);
 
-            $success = $startsWith ? str_starts_with($text, $item) : str_ends_with($text, $item);
+            $success = $startsWith ? Utils::str_starts_with($text, $item) : Utils::str_ends_with($text, $item);
 
             if ($success) {
                 return !$negate;
@@ -1164,7 +1164,7 @@ final class RolloutEvaluator
      */
     private static function ensureComparisonValues($comparisonValues): array
     {
-        if (!array_is_list($comparisonValues)) {
+        if (!Utils::array_is_list($comparisonValues)) {
             throw new UnexpectedValueException('Comparison value is missing or invalid.');
         }
 
