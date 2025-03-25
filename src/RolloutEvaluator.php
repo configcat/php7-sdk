@@ -631,7 +631,7 @@ final class RolloutEvaluator
                 return !is_string($versionOrError)
                     ? $this->evaluateSemVerRelation(
                         $versionOrError,
-                        $comparator, // @phpstan-ignore-line
+                        $comparator,
                         $condition[UserCondition::STRING_COMPARISON_VALUE] ?? null
                     )
                     : $versionOrError;
@@ -647,7 +647,7 @@ final class RolloutEvaluator
                 return !is_string($numberOrError)
                     ? $this->evaluateNumberRelation(
                         $numberOrError,
-                        $comparator, // @phpstan-ignore-line
+                        $comparator,
                         $condition[UserCondition::NUMBER_COMPARISON_VALUE] ?? null
                     )
                     : $numberOrError;
