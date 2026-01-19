@@ -14,7 +14,7 @@ ConfigCat is a <a href="https://configcat.com" target="_blank">hosted feature fl
 [![Sonar Coverage](https://img.shields.io/sonar/coverage/configcat_php7-sdk?logo=SonarCloud&server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/project/overview?id=configcat_php7-sdk)
 
 ## Requirements
-- PHP >= 7.1
+- PHP >= 7.2
 
 ConfigCat SDK for PHP >= 8.1 is available [here](https://github.com/configcat/php-sdk).
 
